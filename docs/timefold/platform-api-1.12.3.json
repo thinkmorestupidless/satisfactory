@@ -1,0 +1,2658 @@
+{
+  "openapi": "3.1.0",
+  "components": {
+    "schemas": {
+      "ConfigurationProfileDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string",
+            "pattern": "\\S",
+            "minLength": 1,
+            "maxLength": 60
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "mapsConfiguration": {
+            "$ref": "#/components/schemas/MapsConfigurationDTO"
+          },
+          "resourcesConfiguration": {
+            "$ref": "#/components/schemas/ResourcesConfigurationDTO"
+          },
+          "runConfiguration": {
+            "$ref": "#/components/schemas/RunConfigurationDTO"
+          },
+          "modelConfiguration": {
+            "type": "object",
+            "additionalProperties": {
+
+            }
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "examples": [
+              "2022-03-10T12:15:50-04:00"
+            ],
+            "readOnly": true
+          },
+          "defaultConfigProfileId": {
+            "type": "string",
+            "pattern": "\\S"
+          }
+        },
+        "required": [
+          "name",
+          "defaultConfigProfileId"
+        ]
+      },
+      "ConfigurationProfileUpdateDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "mapsConfiguration": {
+            "$ref": "#/components/schemas/MapsConfigurationDTO"
+          },
+          "resourcesConfiguration": {
+            "$ref": "#/components/schemas/ResourcesConfigurationDTO"
+          },
+          "runConfiguration": {
+            "$ref": "#/components/schemas/RunConfigurationDTO"
+          },
+          "modelConfiguration": {
+            "type": "object",
+            "additionalProperties": {
+
+            }
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "examples": [
+              "2022-03-10T12:15:50-04:00"
+            ],
+            "readOnly": true
+          }
+        }
+      },
+      "ExternalMapDescriptionDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "readOnly": true,
+            "type": "string",
+            "$ref": "#/components/schemas/UUID"
+          },
+          "name": {
+            "type": "string",
+            "pattern": "\\S"
+          },
+          "description": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "writeOnly": true,
+            "pattern": "\\S"
+          },
+          "headers": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "writeOnly": true
+          }
+        },
+        "required": [
+          "name",
+          "url"
+        ]
+      },
+      "MapsConfigurationDTO": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60
+          },
+          "location": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60
+          },
+          "maxDistanceFromRoad": {
+            "type": "number",
+            "format": "double",
+            "exclusiveMinimum": 0
+          },
+          "transportType": {
+            "$ref": "#/components/schemas/TransportTypeDTO"
+          },
+          "useTraffic": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ModelBuildInfoDTO": {
+        "type": "object",
+        "properties": {
+          "buildTime": {
+            "type": "string"
+          },
+          "buildCommit": {
+            "type": "string"
+          },
+          "branch": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "solverVersion": {
+            "type": "string"
+          },
+          "sdkVersion": {
+            "type": "string"
+          }
+        }
+      },
+      "OsrmMapAlgorithmDTO": {
+        "type": "string",
+        "enum": [
+          "CH",
+          "MLD"
+        ]
+      },
+      "OsrmMapDeploymentInfoDTO": {
+        "type": "object",
+        "required": [
+          "region",
+          "tag"
+        ],
+        "properties": {
+          "region": {
+            "type": "string",
+            "minLength": 1
+          },
+          "transportType": {
+            "$ref": "#/components/schemas/TransportTypeDTO"
+          },
+          "timeframe": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": {
+            "type": "string"
+          },
+          "link": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "algorithm": {
+            "$ref": "#/components/schemas/OsrmMapAlgorithmDTO"
+          },
+          "scaleToZeroDelay": {
+            "type": "string",
+            "format": "duration",
+            "examples": [
+              "P1D"
+            ]
+          },
+          "scaleToZero": {
+            "type": "boolean"
+          }
+        }
+      },
+      "OsrmMapDeploymentUpdateDTO": {
+        "type": "object",
+        "properties": {
+          "tag": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "link": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "algorithm": {
+            "$ref": "#/components/schemas/OsrmMapAlgorithmDTO"
+          },
+          "scaleToZeroDelay": {
+            "type": "string",
+            "format": "duration",
+            "examples": [
+              "P1D"
+            ]
+          },
+          "scaleToZero": {
+            "type": "boolean"
+          }
+        }
+      },
+      "OsrmMapDescriptionDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "region": {
+            "type": "string"
+          },
+          "transportType": {
+            "$ref": "#/components/schemas/TransportTypeDTO"
+          },
+          "timeframe": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "link": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          },
+          "deploymentTime": {
+            "type": "string"
+          },
+          "instances": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "version": {
+            "type": "string"
+          },
+          "algorithm": {
+            "$ref": "#/components/schemas/OsrmMapAlgorithmDTO"
+          },
+          "scaleToZeroDelay": {
+            "type": "string",
+            "format": "duration",
+            "examples": [
+              "P1D"
+            ]
+          },
+          "scaleToZero": {
+            "type": "boolean"
+          }
+        }
+      },
+      "OutputMetricDescriptorDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "type": {
+            "type": "object"
+          },
+          "priority": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "example": {
+            "type": "string"
+          },
+          "exampleFormatted": {
+            "type": "string"
+          }
+        }
+      },
+      "RegisteredCatalogEntryDTO": {
+        "readOnly": true,
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "registrationKey": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "overview": {
+            "type": "string"
+          },
+          "imageRef": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "maturityLevel": {
+            "type": "object"
+          },
+          "environment": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "resources": {
+            "$ref": "#/components/schemas/ResourcesDTO"
+          },
+          "features": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "outputMetrics": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OutputMetricDescriptorDTO"
+            }
+          },
+          "logoUrl": {
+            "type": "string"
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "visualizationPages": {
+            "type": "array",
+            "items": {
+
+            }
+          },
+          "tenantId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+          },
+          "type": {
+            "type": "object"
+          },
+          "restrictedTo": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+            }
+          },
+          "maxThreadCount": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "default": 1
+          },
+          "trialConfig": {
+            "type": "object"
+          },
+          "buildInfo": {
+            "$ref": "#/components/schemas/ModelBuildInfoDTO"
+          },
+          "lastUpdateDate": {
+            "type": "string",
+            "format": "date-time",
+            "examples": [
+              "2022-03-10T12:15:50-04:00"
+            ]
+          },
+          "status": {
+            "type": "object"
+          },
+          "releaseOffset": {
+            "type": "integer",
+            "format": "int32",
+            "maximum": 3,
+            "minimum": 0,
+            "description": "Position in the model's release chain: 0 = latest, 1..3 = that many releases behind the latest. Mirrors the maximum organization version lag.",
+            "examples": [0],
+            "default": 0
+          }
+        }
+      },
+      "ResourcesConfigurationDTO": {
+        "type": "object",
+        "properties": {
+          "memory": {
+            "type": "number",
+            "format": "double",
+            "description": "Memory in Mi",
+            "examples": [1024],
+            "exclusiveMinimum": 0
+          },
+          "labels": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ResourcesDTO": {
+        "type": "object",
+        "properties": {
+          "memoryRequest": {
+            "type": "string"
+          },
+          "memoryLimit": {
+            "type": "string"
+          },
+          "cpuRequest": {
+            "type": "string"
+          },
+          "cpuLimit": {
+            "type": "string"
+          }
+        }
+      },
+      "RunConfigurationDTO": {
+        "type": "object",
+        "properties": {
+          "maxThreadCount": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "minimum": 1
+          },
+          "termination": {
+            "$ref": "#/components/schemas/SolverTerminationConfigDTO"
+          }
+        }
+      },
+      "SolverTerminationConfigDTO": {
+        "type": "object",
+        "required": [
+          "spentLimit"
+        ],
+        "properties": {
+          "spentLimit": {
+            "type": "string",
+            "format": "duration",
+            "examples": [
+              "P1D"
+            ]
+          },
+          "unimprovedSpentLimit": {
+            "type": "string",
+            "format": "duration",
+            "examples": [
+              "P1D"
+            ]
+          },
+          "stepCountLimit": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "moveCountLimit": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "slidingWindowDuration": {
+            "type": "string",
+            "format": "duration",
+            "examples": [
+              "P1D"
+            ]
+          },
+          "minimumImprovementRatio": {
+            "type": "number",
+            "format": "double",
+            "exclusiveMinimum": 0
+          }
+        }
+      },
+      "TransportTypeDTO": {
+        "type": "string",
+        "enum": [
+          "CAR",
+          "BICYCLE",
+          "FOOT"
+        ]
+      },
+      "UUID": {
+        "type": "string",
+        "format": "uuid",
+        "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+      }
+    },
+    "securitySchemes": {
+      "bearerSecurityScheme": {
+        "type": "http",
+        "description": "Bearer token (personal access token of the Timefold Platform) for authentication",
+        "scheme": "Bearer"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Platform - Models Administration"
+    },
+    {
+      "name": "Platform - OSRM Maps Administration"
+    },
+    {
+      "name": "Platform Tenants Administration - External Providers"
+    },
+    {
+      "name": "Platform Tenants Administration - Location sets"
+    }
+  ],
+  "paths": {
+    "/api/platform/v1/maps/osrm": {
+      "get": {
+        "summary": "Lists OSRM Maps available for the user",
+        "tags": [
+          "Platform - OSRM Maps Administration"
+        ],
+        "responses": {
+          "403": {
+            "description": "In case caller does not have permissions for this operation"
+          },
+          "500": {
+            "description": "In case of processing errors",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "List of OSRM Maps available for the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OsrmMapDescriptionDTO"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerSecurityScheme": []
+          }
+        ]
+      },
+      "post": {
+        "summary": "Deploy OSRM Map of region",
+        "tags": [
+          "Platform - OSRM Maps Administration"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OsrmMapDeploymentInfoDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "In case region already deployed"
+          },
+          "403": {
+            "description": "In case caller does not have permissions for this operation"
+          },
+          "500": {
+            "description": "In case of processing errors",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "Map deployment started"
+          }
+        },
+        "security": [
+          {
+            "bearerSecurityScheme": []
+          }
+        ]
+      }
+    },
+    "/api/platform/v1/maps/osrm/restore": {
+      "post": {
+        "summary": "Restores OSRM Maps from storage",
+        "tags": [
+          "Platform - OSRM Maps Administration"
+        ],
+        "responses": {
+          "403": {
+            "description": "In case caller does not have permissions for this operation"
+          },
+          "500": {
+            "description": "In case of processing errors",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "OSRM Maps restored from storage"
+          }
+        },
+        "security": [
+          {
+            "bearerSecurityScheme": []
+          }
+        ]
+      }
+    },
+    "/api/platform/v1/maps/osrm/{id}": {
+      "put": {
+        "summary": "Update OSRM Map of region",
+        "tags": [
+          "Platform - OSRM Maps Administration"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OsrmMapDeploymentUpdateDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "403": {
+            "description": "In case caller does not have permissions for this operation"
+          },
+          "404": {
+            "description": "In case region not found or not deployed"
+          },
+          "500": {
+            "description": "In case of processing errors",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "Map deployment updated"
+          }
+        },
+        "security": [
+          {
+            "bearerSecurityScheme": []
+          }
+        ]
+      },
+      "get": {
+        "summary": "Get OSRM Map description",
+        "tags": [
+          "Platform - OSRM Maps Administration"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "403": {
+            "description": "In case caller does not have permissions for this operation"
+          },
+          "404": {
+            "description": "In case region not found or not deployed"
+          },
+          "500": {
+            "description": "In case of processing errors",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OSRM Map description",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OsrmMapDescriptionDTO"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerSecurityScheme": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "Delete OSRM Map deployment",
+        "tags": [
+          "Platform - OSRM Maps Administration"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "force",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "403": {
+            "description": "In case caller does not have permissions for this operation"
+          },
+          "404": {
+            "description": "In case region not found or not deployed"
+          },
+          "500": {
+            "description": "In case of processing errors",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "OSRM Map deployment deleted"
+          }
+        },
+        "security": [
+          {
+            "bearerSecurityScheme": []
+          }
+        ]
+      }
+    },
+    "/api/platform/v1/models": {
+      "post": {
+        "summary": "Registers model for a tenant based on provided model descriptor (jar package generated for the model)",
+        "tags": [
+          "Platform - Models Administration"
+        ],
+        "parameters": [
+          {
+            "description": "Optional automatic subscription for tenants",
+            "required": false,
+            "name": "handleSubscription",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "description": "Optional model registration overview",
+            "required": false,
+            "name": "overview",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Optional model registration key",
+            "required": false,
+            "name": "registrationKey",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9_-]+$"
+            }
+          },
+          {
+            "description": "Optional list of tenants this model should be restricted to",
+            "required": false,
+            "name": "restrictedTo",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+              }
+            }
+          },
+          {
+            "description": "Determines if the model should be made public (visible to all) defaults to false",
+            "required": false,
+            "name": "type",
+            "in": "query",
+            "schema": {
+              "type": "object",
+              "default": "Private"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/octet-stream": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "In case model descriptor is missing or is invalid, or registration key is invalid"
+          },
+          "409": {
+            "description": "In case a model with same id or registration key already exists"
+          },
+          "422": {
+            "description": "In case the model already has the maximum number of registered versions"
+          },
+          "403": {
+            "description": "In case caller does not have permissions for this operation"
+          },
+          "500": {
+            "description": "In case of processing errors",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Model registration based on provided model descriptor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegisteredCatalogEntryDTO"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerSecurityScheme": []
+          }
+        ]
+      },
+      "get": {
+        "summary": "Retrieve all registered models based on filter criteria",
+        "tags": [
+          "Platform - Models Administration"
+        ],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tenantId",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/UUID"
+            }
+          },
+          {
+            "name": "version",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "403": {
+            "description": "In case caller does not have permissions for this operation"
+          },
+          "500": {
+            "description": "In case of processing errors",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "List registered models for given criteria",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RegisteredCatalogEntryDTO"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerSecurityScheme": []
+          }
+        ]
+      }
+    },
+    "/api/platform/v1/models/{modelId}/configurations": {
+      "get": {
+        "summary": "Retrieves configuration details registered within the tenant with given subscription id",
+        "tags": [
+          "Platform - Models Administration"
+        ],
+        "parameters": [
+          {
+            "name": "modelId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Tenant id in case user has access to more than one tenant in the platform",
+            "required": false,
+            "name": "X-TF-TENANT-ID",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/UUID"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "In case request given does not meet expectations"
+          },
+          "403": {
+            "description": "In case caller does not have permissions for this operation"
+          },
+          "404": {
+            "description": "In case model not found"
+          },
+          "500": {
+            "description": "In case of processing errors",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Configuration details for the model",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "items": {
+                    "$ref": "#/components/schemas/ConfigurationProfileDTO"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerSecurityScheme": []
+          }
+        ]
+      },
+      "post": {
+        "summary": "Creates new model's configuration within the tenant to allow configuration per request",
+        "tags": [
+          "Platform - Models Administration"
+        ],
+        "parameters": [
+          {
+            "name": "modelId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Tenant id in case user has access to more than one tenant in the platform",
+            "required": false,
+            "name": "X-TF-TENANT-ID",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/UUID"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfigurationProfileDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "In case request given does not meet expectations"
+          },
+          "403": {
+            "description": "In case caller does not have permissions for this operation"
+          },
+          "404": {
+            "description": "In case model not found"
+          },
+          "500": {
+            "description": "In case of processing errors",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Registered configuration for the model",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfigurationProfileDTO"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerSecurityScheme": []
+          }
+        ]
+      }
+    },
+    "/api/platform/v1/models/{modelId}/configurations/{configurationId}": {
+      "put": {
+        "summary": "Updates model subscription's configuration from the tenant",
+        "tags": [
+          "Platform - Models Administration"
+        ],
+        "parameters": [
+          {
+            "name": "configurationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "modelId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Tenant id in case user has access to more than one tenant in the platform",
+            "required": false,
+            "name": "X-TF-TENANT-ID",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/UUID"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfigurationProfileUpdateDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "In case request given does not meet expectations"
+          },
+          "403": {
+            "description": "In case caller does not have permissions for this operation"
+          },
+          "404": {
+            "description": "In case of model or configuration not found"
+          },
+          "500": {
+            "description": "In case of processing errors",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "The updated subscription's configurations for the tenant",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfigurationProfileDTO"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerSecurityScheme": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "Removes model subscription's configuration from the tenant",
+        "tags": [
+          "Platform - Models Administration"
+        ],
+        "parameters": [
+          {
+            "name": "configurationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "modelId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Tenant id in case user has access to more than one tenant in the platform",
+            "required": false,
+            "name": "X-TF-TENANT-ID",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/UUID"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "In case request given does not meet expectations"
+          },
+          "403": {
+            "description": "In case caller does not have permissions for this operation"
+          },
+          "404": {
+            "description": "In case of model or configuration not found"
+          },
+          "500": {
+            "description": "In case of processing errors",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Remaining subscription's configurations for the tenant"
+          }
+        },
+        "security": [
+          {
+            "bearerSecurityScheme": []
+          }
+        ]
+      },
+      "get": {
+        "summary": "Retrieves configuration details registered for the model and configuration id",
+        "tags": [
+          "Platform - Models Administration"
+        ],
+        "parameters": [
+          {
+            "name": "configurationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "modelId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Tenant id in case user has access to more than one tenant in the platform",
+            "required": false,
+            "name": "X-TF-TENANT-ID",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/UUID"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "In case request given does not meet expectations"
+          },
+          "403": {
+            "description": "In case caller does not have permissions for this operation"
+          },
+          "404": {
+            "description": "In case of model or configuration not found"
+          },
+          "500": {
+            "description": "In case of processing errors",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Configuration details for the model with given id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfigurationProfileDTO"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerSecurityScheme": []
+          }
+        ]
+      }
+    },
+    "/api/platform/v1/models/{registrationKey}": {
+      "put": {
+        "summary": "Updates registered model descriptor and metadata with given registration key",
+        "tags": [
+          "Platform - Models Administration"
+        ],
+        "parameters": [
+          {
+            "name": "registrationKey",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Optional automatic subscription for tenants",
+            "required": false,
+            "name": "handleSubscription",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "description": "Optional model registration overview",
+            "required": false,
+            "name": "overview",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Release offset of the target release in the chain (0 = latest)",
+            "required": false,
+            "name": "releaseOffset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "description": "Optional list of tenants this model should be restricted to",
+            "required": false,
+            "name": "restrictedTo",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/octet-stream": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "404": {
+            "description": "In case model with given registration key was not found"
+          },
+          "409": {
+            "description": "In case a model with given registration key is already registered to a different tenant"
+          },
+          "403": {
+            "description": "In case caller does not have permissions for this operation"
+          },
+          "500": {
+            "description": "In case of processing errors",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Updated registered model descriptor and metadata",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegisteredCatalogEntryDTO"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerSecurityScheme": []
+          }
+        ]
+      },
+      "patch": {
+        "summary": "Updates registered model descriptor only with given registration key",
+        "tags": [
+          "Platform - Models Administration"
+        ],
+        "parameters": [
+          {
+            "name": "registrationKey",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Release offset of the target release in the chain (0 = latest)",
+            "required": false,
+            "name": "releaseOffset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/octet-stream": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "404": {
+            "description": "In case model with given registration key was not found"
+          },
+          "409": {
+            "description": "In case a model with given registration key is already registered to a different tenant"
+          },
+          "403": {
+            "description": "In case caller does not have permissions for this operation"
+          },
+          "500": {
+            "description": "In case of processing errors",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Updated registered model descriptor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegisteredCatalogEntryDTO"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerSecurityScheme": []
+          }
+        ]
+      },
+      "get": {
+        "summary": "Retrieves registered model with given identifier for a tenant",
+        "tags": [
+          "Platform - Models Administration"
+        ],
+        "parameters": [
+          {
+            "name": "registrationKey",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Release offset of the target release in the chain (0 = latest)",
+            "required": false,
+            "name": "releaseOffset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "In case model with given registration key was not found"
+          },
+          "403": {
+            "description": "In case caller does not have permissions for this operation"
+          },
+          "500": {
+            "description": "In case of processing errors",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Registered model with given identifier for a tenant",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegisteredCatalogEntryDTO"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerSecurityScheme": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "Removes registered model with given identifier for a tenant",
+        "tags": [
+          "Platform - Models Administration"
+        ],
+        "parameters": [
+          {
+            "name": "registrationKey",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Optional automatic unsubscription for tenants",
+            "required": false,
+            "name": "handleSubscription",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "description": "Release offset of the target release in the chain (0 = latest)",
+            "required": false,
+            "name": "releaseOffset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "In case model with given registration key was not found"
+          },
+          "403": {
+            "description": "In case caller does not have permissions for this operation"
+          },
+          "500": {
+            "description": "In case of processing errors",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Removed model with given identifier for a tenant"
+          }
+        },
+        "security": [
+          {
+            "bearerSecurityScheme": []
+          }
+        ]
+      }
+    },
+    "/api/platform/v1/models/{registrationKey}/model-images/{imageName}": {
+      "get": {
+        "summary": "Returns image (logo or screenshot) of the model given by unique identifier for a tenant",
+        "tags": [
+          "Platform - Models Administration"
+        ],
+        "parameters": [
+          {
+            "name": "imageName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "registrationKey",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Release offset of the target release in the chain (0 = latest)",
+            "required": false,
+            "name": "releaseOffset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "In case model with given id was not found"
+          },
+          "403": {
+            "description": "In case caller does not have permissions for this operation"
+          },
+          "500": {
+            "description": "In case of processing errors",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Model image",
+            "content": {
+              "application/octet-stream": {
+
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerSecurityScheme": []
+          }
+        ]
+      }
+    },
+    "/api/platform/v1/models/{registrationKey}/restrictedTo": {
+      "get": {
+        "summary": "Retrieves the tenants that a registered model is restricted to",
+        "tags": [
+          "Platform - Models Administration"
+        ],
+        "parameters": [
+          {
+            "name": "registrationKey",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Release offset of the target release in the chain (0 = latest)",
+            "required": false,
+            "name": "releaseOffset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "In case model with given registration key was not found"
+          },
+          "403": {
+            "description": "In case caller does not have permissions for this operation"
+          },
+          "500": {
+            "description": "In case of processing errors",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Retrieves the tenants that a registered model is restricted to",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerSecurityScheme": []
+          }
+        ]
+      },
+      "post": {
+        "summary": "Adds a list of tenants to registered model restricted to list",
+        "tags": [
+          "Platform - Models Administration"
+        ],
+        "parameters": [
+          {
+            "name": "registrationKey",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Optional automatic subscription for tenants",
+            "required": false,
+            "name": "handleSubscription",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "description": "Release offset of the target release in the chain (0 = latest)",
+            "required": false,
+            "name": "releaseOffset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "In case model with given registration key was not found"
+          },
+          "403": {
+            "description": "In case caller does not have permissions for this operation"
+          },
+          "500": {
+            "description": "In case of processing errors",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "New tenants added to registered model restricted to list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerSecurityScheme": []
+          }
+        ]
+      }
+    },
+    "/api/platform/v1/models/{registrationKey}/restrictedTo/{existingTenantId}": {
+      "delete": {
+        "summary": "Removes tenant from registered model restricted to list",
+        "tags": [
+          "Platform - Models Administration"
+        ],
+        "parameters": [
+          {
+            "name": "existingTenantId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/UUID"
+            }
+          },
+          {
+            "name": "registrationKey",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Optional automatic unsubscription for tenants",
+            "required": false,
+            "name": "handleSubscription",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "description": "Release offset of the target release in the chain (0 = latest)",
+            "required": false,
+            "name": "releaseOffset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "In case model with given registration key was not found"
+          },
+          "403": {
+            "description": "In case caller does not have permissions for this operation"
+          },
+          "500": {
+            "description": "In case of processing errors",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Tenant removed from registered model restricted to list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerSecurityScheme": []
+          }
+        ]
+      }
+    },
+    "/api/platform/v1/tenants/{tenantId}/maps/external-providers": {
+      "parameters": [
+        {
+          "name": "tenantId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/UUID"
+          }
+        }
+      ],
+      "post": {
+        "summary": "Register a new external provider",
+        "tags": [
+          "Platform Tenants Administration - External Providers"
+        ],
+        "parameters": [
+          {
+            "name": "tenantId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/UUID"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExternalMapDescriptionDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "In case region already deployed"
+          },
+          "403": {
+            "description": "In case caller does not have permissions for this operation"
+          },
+          "500": {
+            "description": "In case of processing errors",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "External provider registered"
+          }
+        },
+        "security": [
+          {
+            "bearerSecurityScheme": []
+          }
+        ]
+      },
+      "get": {
+        "summary": "Lists External Providers available for the user",
+        "tags": [
+          "Platform Tenants Administration - External Providers"
+        ],
+        "parameters": [
+          {
+            "name": "tenantId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/UUID"
+            }
+          }
+        ],
+        "responses": {
+          "403": {
+            "description": "In case caller does not have permissions for this operation"
+          },
+          "500": {
+            "description": "In case of processing errors",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "List of External Providers available for the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ExternalMapDescriptionDTO"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerSecurityScheme": []
+          }
+        ]
+      }
+    },
+    "/api/platform/v1/tenants/{tenantId}/maps/external-providers/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/UUID"
+          }
+        },
+        {
+          "name": "tenantId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/UUID"
+          }
+        }
+      ],
+      "put": {
+        "summary": "Update an existing external provider",
+        "tags": [
+          "Platform Tenants Administration - External Providers"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/UUID"
+            }
+          },
+          {
+            "name": "tenantId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/UUID"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExternalMapDescriptionDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "403": {
+            "description": "In case caller does not have permissions for this operation"
+          },
+          "404": {
+            "description": "In case region not found or not deployed"
+          },
+          "500": {
+            "description": "In case of processing errors",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "External provider updated"
+          }
+        },
+        "security": [
+          {
+            "bearerSecurityScheme": []
+          }
+        ]
+      },
+      "get": {
+        "summary": "Get External provider description",
+        "tags": [
+          "Platform Tenants Administration - External Providers"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/UUID"
+            }
+          },
+          {
+            "name": "tenantId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/UUID"
+            }
+          }
+        ],
+        "responses": {
+          "403": {
+            "description": "In case caller does not have permissions for this operation"
+          },
+          "404": {
+            "description": "In case region not found or not deployed"
+          },
+          "500": {
+            "description": "In case of processing errors",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "External provider description",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalMapDescriptionDTO"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerSecurityScheme": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "Delete an existing external provider",
+        "tags": [
+          "Platform Tenants Administration - External Providers"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/UUID"
+            }
+          },
+          {
+            "name": "tenantId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/UUID"
+            }
+          }
+        ],
+        "responses": {
+          "403": {
+            "description": "In case caller does not have permissions for this operation"
+          },
+          "404": {
+            "description": "In case region not found or not deployed"
+          },
+          "500": {
+            "description": "In case of processing errors",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "External provider deleted"
+          }
+        },
+        "security": [
+          {
+            "bearerSecurityScheme": []
+          }
+        ]
+      }
+    },
+    "/api/platform/v1/tenants/{tenantId}/maps/location-sets": {
+      "get": {
+        "summary": "Retrieve location sets information for a tenant",
+        "tags": [
+          "Platform Tenants Administration - Location sets"
+        ],
+        "parameters": [
+          {
+            "name": "tenantId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/UUID"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "maximum": 1000,
+              "minimum": 0,
+              "default": 100
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "In case request given does not meet expectations"
+          },
+          "403": {
+            "description": "In case caller does not have permissions for this operation"
+          },
+          "500": {
+            "description": "In case of processing errors",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "List location sets information for given tenant",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerSecurityScheme": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "Delete all location sets for a tenant",
+        "tags": [
+          "Platform Tenants Administration - Location sets"
+        ],
+        "parameters": [
+          {
+            "name": "tenantId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/UUID"
+            }
+          }
+        ],
+        "responses": {
+          "403": {
+            "description": "In case caller does not have permissions for this operation"
+          },
+          "500": {
+            "description": "In case of processing errors",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "Successful deletion of all location sets"
+          }
+        },
+        "security": [
+          {
+            "bearerSecurityScheme": []
+          }
+        ]
+      },
+      "post": {
+        "summary": "Add a location set to a tenant",
+        "tags": [
+          "Platform Tenants Administration - Location sets"
+        ],
+        "parameters": [
+          {
+            "name": "tenantId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/UUID"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "In case request given does not meet expectations"
+          },
+          "403": {
+            "description": "In case caller does not have permissions for this operation"
+          },
+          "500": {
+            "description": "In case of processing errors",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Location set information after successful addition",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerSecurityScheme": []
+          }
+        ]
+      }
+    },
+    "/api/platform/v1/tenants/{tenantId}/maps/location-sets/{locationSetName}": {
+      "patch": {
+        "summary": "Add list of locations to a location set",
+        "tags": [
+          "Platform Tenants Administration - Location sets"
+        ],
+        "parameters": [
+          {
+            "name": "locationSetName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tenantId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/UUID"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "In case request given does not meet expectations"
+          },
+          "404": {
+            "description": "In case location set not found"
+          },
+          "403": {
+            "description": "In case caller does not have permissions for this operation"
+          },
+          "500": {
+            "description": "In case of processing errors",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Location set information after successful patch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerSecurityScheme": []
+          }
+        ]
+      },
+      "get": {
+        "summary": "Retrieve a location set for a tenant by name",
+        "tags": [
+          "Platform Tenants Administration - Location sets"
+        ],
+        "parameters": [
+          {
+            "name": "locationSetName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tenantId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/UUID"
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "In case location set not found"
+          },
+          "403": {
+            "description": "In case caller does not have permissions for this operation"
+          },
+          "500": {
+            "description": "In case of processing errors",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "List location sets for given tenant",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerSecurityScheme": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "Delete a location set for a tenant by name",
+        "tags": [
+          "Platform Tenants Administration - Location sets"
+        ],
+        "parameters": [
+          {
+            "name": "locationSetName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tenantId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/UUID"
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "In case location set not found"
+          },
+          "403": {
+            "description": "In case caller does not have permissions for this operation"
+          },
+          "500": {
+            "description": "In case of processing errors",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "Successful deletion of location set"
+          }
+        },
+        "security": [
+          {
+            "bearerSecurityScheme": []
+          }
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Timefold Platform API",
+    "version": "1.12.3",
+    "description": "Timefold Platform API - intended for customers to interact with the platform (not models). For guidance on how to use this API, see https://docs.timefold.ai/timefold-platform/latest/api/platform-api",
+    "contact": {
+      "name": "Timefold BV",
+      "email": "info@timefold.ai",
+      "url": "https://timefold.ai"
+    }
+  }
+}
