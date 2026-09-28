@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://satisfactory.thinkmorestupidless.com/models/vehicle-routing/v1/output",
+  "title": "VehicleRoutePlan",
+  "description": "The input with every vehicle's route, and each visit's arrival. Accepted unchanged as input.",
+  "type": "object",
+  "required": ["vehicles", "visits"],
+  "properties": {
+    "vehicles": { "type": "array", "items": { "type": "object", "properties": { "visits": { "type": "array", "items": { "type": "string" } } } } },
+    "visits": { "type": "array", "items": { "type": "object", "properties": { "vehicle": { "type": ["string", "null"] }, "arrivalTime": { "type": ["string", "null"] } } } }
+  }
+}

@@ -13,7 +13,7 @@ Five tiers, cheapest first. Each tier names the spec stories and success criteri
 ## Tier 1 — models and runner, no runtime (seconds)
 
 ```bash
-sbt modelSpi/test models/test          # JUnit: codecs round-trip, validation catalog, weight mapping, ablation analysis
+sbt modelSpi/test employeeScheduling/test vehicleRouting/test   # codecs round-trip, validation, weights, ablation, a real solve
 sbt protocol/test runner/test          # munit: throttle (latest-wins, 250 ms floor, final always sent), claim loop on a scripted ControlChannel
 sbt spike/run                          # phase 0: one model, SolverManager, throttle → prints improving scores for 10 s
 ```
@@ -47,16 +47,17 @@ sbt 'api/testOnly satisfactory.api.*HttpSuite'
 | `AnalysisHttpSuite` | 7 | stateless `POST /score-analysis`; per-dataset analysis after solve; Community shape (no `matches`) |
 | `LifecycleHttpSuite` | 8 | list by tag; PATCH limits; purge refused while solving; purge → 410 on bodies; restore; expiry deletes blobs |
 | `OperatorHttpSuite` | 10 | `/ops/datasets` without content; pause queue → nothing starts; force-terminate; audit rows; `/metrics` text |
+| `SecurityHttpSuite` | — | runner token required; operator-only routes; API keys and tokens do not cross APIs; the inflation cap |
 
 Proves: SC-001 (demo → feasible < 60 s), SC-002, SC-003, SC-005, SC-009, SC-010, SC-011, SC-013, SC-014, SC-016, SC-018 (a log scan over the suite's captured output finds no input or solution content).
 
 ## Tier 4 — the pool: kill a worker mid-solve (about two minutes)
 
 ```bash
-sbt 'solver/testOnly satisfactory.solver.PoolResilienceSuite'
+sbt 'solver/testOnly satisfactory.solver.PoolResilienceSuite satisfactory.solver.SolverServiceSuite'
 ```
 
-Starts `api` under `AnkkaTestKit`, then two `SolverRuntime` instances in the same JVM speaking `ControlChannel.Http` against `api`'s bound port, each with one slot. Submits four datasets at `spentLimit = PT60S`; after 10 s, stops one runtime abruptly (no drain); after 20 s, drains the other through `/ops/workers/{id}/drain` and starts a third. Asserts: every dataset reaches `SOLVING_COMPLETED`; each dataset's final score ≥ its score at the moment its worker died; a replayed report from the dead worker's epoch answers 409 and changes nothing; the drained worker's datasets re-queue with `warmStartRef` and resume elsewhere within 60 s; `LeaseLost` count equals the number of kills. Proves: Story 4, Story 10 drain; SC-006, SC-007, SC-008 (worker half), SC-017.
+Starts `api` under `AnkkaTestKit` with no runner of its own, then workers in the same JVM speaking the runner protocol over HTTP against `api`'s bound port, each with one slot. `SolverServiceSuite` also starts the real `solver` service (an ankka service with no components) and solves through it. Submits four datasets at `spentLimit = PT60S`; after 10 s, stops one runtime abruptly (no drain); after 20 s, drains the other through `/ops/workers/{id}/drain` and starts a third. Asserts: every dataset reaches `SOLVING_COMPLETED`; each dataset's final score ≥ its score at the moment its worker died; a replayed report from the dead worker's epoch answers 409 and changes nothing; the drained worker's datasets re-queue with `warmStartRef` and resume elsewhere within 60 s; `LeaseLost` count equals the number of kills. Proves: Story 4, Story 10 drain; SC-006, SC-007, SC-008 (worker half), SC-017.
 
 ## Tier 5 — deployed on a local ankka (ten minutes)
 
@@ -96,8 +97,29 @@ sbt ankkaSatisfactory/test
 
 `FakeSatisfactorySuite` scripts a submit and a `dataset.completed` webhook; `PlannerWorkflowSuite` runs an `AnkkaTestKit` service with an agent using `SatisfactoryTools.forModel(...)` under `TestModelProvider`, a workflow that submits and `thenPause`s, and an endpoint that verifies the fake's webhook and resumes it. Asserts the workflow reaches its result step with the solution, the submit carried the `ankka-workflow:<id>` tag, a tampered signature is refused, and a duplicate webhook is a no-op. Proves: Story 9; SC-015.
 
+## Tier 5 without a cluster
+
+Tier 5 has not been run: this machine had no kind cluster, and creating one would change the kubectl
+context. What stands in for it: both images build (`sbt api/Docker/publishLocal solver/Docker/publishLocal`),
+the `api` image was run against compose Postgres and solved a demo dataset submitted with curl, and
+`SolverServiceSuite` runs the real `solver` service against `api`.
+
 ## Known limits at this tier of ankka
 
 - `SC-012` (2 GiB uncompressed) is enforced as a cap but cannot be exercised on a `small` instance; the 100 MiB compressed case is what tier 5 tests.
 - Slots per `large` worker instance = 1 (research R4); the pool's capacity equals its instance count until ankka offers a larger type.
 - SSE frames are JSON-quoted strings and there are no `id:` frames (research R9); browsers' `EventSource` needs the client library's unwrapping until the ankka follow-up lands.
+
+## Results (2026-09-28, laptop, `sbt test`)
+
+| Tier | Suites | Tests | Wall-clock |
+|---|---|---|---|
+| 1 | protocol, model SPI, both models, runner | 57 | under 1 min |
+| 2 | dataset and tenant entities, config resolver | 28 | seconds |
+| 3 | nine HTTP suites, stream source, patch, blob store | 80 | about 7 min |
+| 4 | pool resilience, solver service | 4 | about 2.5 min |
+| 6 | fake, planner workflow, client | 10 | under 1 min |
+| **All** | | **172** | **11 min** |
+
+One failure in that run (the solver service suite expected a one-model catalog after vehicle routing was
+added); fixed and rerun green. Tier 5 was not run (see above).

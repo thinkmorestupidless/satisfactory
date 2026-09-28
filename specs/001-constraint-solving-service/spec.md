@@ -39,7 +39,7 @@
 - Q: What visibility and control do platform operators get? → A: Exported operational metrics, a platform-operator-only read API across tenants (datasets with status, worker, lease and attempt; the worker pool with slots), and operator actions: force-terminate any dataset, drain a worker, pause and resume a tenant's queue.
 - Q: How sensitive are submitted inputs and solutions? → A: Confidential by default: never written to logs or shown in cross-tenant operator views (operators see metadata only); purge and retention expiry physically delete input and solution bodies; encryption at rest is a deployment concern.
 - Q (planning, 2026-09-26): Timefold Solver 2.7 Community has no score analysis API (Enterprise-only). → A: Stay on Community. Score analysis reports total score and per-constraint contribution computed by ablation; match counts and justifications are out of scope until an Enterprise licence is a deliberate purchase.
-- Q (planning, 2026-09-26): ankka's tool builder cannot carry a raw JSON schema as a parameter schema. → A: The generated solve tool validates its dataset argument against the model's input schema inside the tool and describes the schema to the model; exposing the schema as the parameter schema follows when ankka supports it.
+- Q (planning, 2026-09-26): ankka's tool builder cannot carry a raw JSON schema as a parameter schema. → A: The generated solve tool validates its dataset argument against the model's input schema inside the tool and describes the schema to the model; exposing the schema as the parameter schema follows when ankka supports it. **Resolved at implementation (2026-09-28):** ankka's `SchemaType` is an open type class, so the solve tool's parameter schema is the model's input schema (references inlined), and arguments are also validated against it before anything is sent.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -232,7 +232,7 @@ An ankka application developer adds one library dependency. From the model catal
 
 **Acceptance Scenarios**:
 
-1. **Given** a model id and version, **When** the developer requests tools, **Then** they receive a submit tool that validates its dataset argument against the model's input schema and describes that schema to the agent, a get-best-solution tool and a terminate tool.
+1. **Given** a model id and version, **When** the developer requests tools, **Then** they receive a submit tool whose parameter schema is the model's input schema, a get-best-solution tool and a terminate tool.
 2. **Given** an agent that calls the submit tool, **When** the arguments do not match the input schema, **Then** the call is rejected before anything is sent.
 3. **Given** a submit made through the tools inside a workflow or session, **When** the dataset is created, **Then** it is tagged with the workflow or session id so the eventual webhook can route itself back.
 4. **Given** a webhook request arriving at the developer's endpoint, **When** the library's check is used as the endpoint's access rule, **Then** unsigned or stale requests are refused before the body is processed.
@@ -409,7 +409,7 @@ A platform operator watches the whole installation, not one tenant. They see que
 **Integration libraries**
 
 - **FR-070**: A client library MUST be published that supports submit, poll, fetch, stream, terminate and lineage operations, and depends on nothing from the hosting platform.
-- **FR-071**: An ankka integration library MUST be published that provides: the client; agent tools generated from a model's catalog entry (submit, whose dataset argument is validated against the model's input schema inside the tool and whose description carries that schema; get best solution; terminate); a webhook verifier consisting of an access-rule predicate (signature header present, timestamp fresh) and a verify-and-decode function returning a typed event; and an in-memory scripted fake that answers the client and fires webhooks locally.
+- **FR-071**: An ankka integration library MUST be published that provides: the client; agent tools generated from a model's catalog entry (submit, whose parameter schema is the model's input schema and whose arguments are validated against it before anything is sent; get best solution; terminate); a webhook verifier consisting of an access-rule predicate (signature header present, timestamp fresh) and a verify-and-decode function returning a typed event; and an in-memory scripted fake that answers the client and fires webhooks locally.
 - **FR-072**: Submissions made through the generated tools MUST be tagged with the calling workflow or session id.
 - **FR-073**: The integration library MUST NOT mount any endpoint itself; the developer writes the receiving endpoint and its access rule.
 - **FR-074**: The fake MUST fail loudly when its script is exhausted.

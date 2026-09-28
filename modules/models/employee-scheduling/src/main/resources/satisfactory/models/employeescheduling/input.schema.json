@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://satisfactory.thinkmorestupidless.com/models/employee-scheduling/v1/input",
+  "title": "EmployeeScheduleInput",
+  "description": "Employees with skills and availability, and shifts that each need one employee with a required skill.",
+  "type": "object",
+  "required": ["employees", "shifts"],
+  "properties": {
+    "employees": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/employee" }
+    },
+    "shifts": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/shift" }
+    }
+  },
+  "$defs": {
+    "date": { "type": "string", "format": "date" },
+    "dateTime": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(:\\d{2}(\\.\\d+)?)?$",
+      "description": "A local date-time, ISO-8601, no offset: 2026-10-05T06:00:00"
+    },
+    "employee": {
+      "type": "object",
+      "required": ["name", "skills"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "skills": { "type": "array", "items": { "type": "string" } },
+        "unavailableDates": { "type": "array", "items": { "$ref": "#/$defs/date" } },
+        "undesiredDates": { "type": "array", "items": { "$ref": "#/$defs/date" } },
+        "desiredDates": { "type": "array", "items": { "$ref": "#/$defs/date" } }
+      }
+    },
+    "shift": {
+      "type": "object",
+      "required": ["id", "start", "end", "location", "requiredSkill"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "start": { "$ref": "#/$defs/dateTime" },
+        "end": { "$ref": "#/$defs/dateTime" },
+        "location": { "type": "string" },
+        "requiredSkill": { "type": "string" },
+        "employee": {
+          "type": ["string", "null"],
+          "description": "The assigned employee's name. Kept as a starting point; with pinned, fixed."
+        },
+        "pinned": { "type": "boolean", "default": false }
+      }
+    }
+  }
+}

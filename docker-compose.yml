@@ -1,0 +1,13 @@
+# Postgres for `sbt api/run`: the journal, views, timers and the blob table.
+# Run `sbt schema` first so target/ddl holds ankka's schema for the init directory.
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: ankka
+      POSTGRES_PASSWORD: ankka
+      POSTGRES_DB: ankka
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./target/ddl:/docker-entrypoint-initdb.d:ro

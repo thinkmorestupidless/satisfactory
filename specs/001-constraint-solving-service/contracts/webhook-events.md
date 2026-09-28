@@ -14,7 +14,7 @@ X-Satisfactory-Delivery: evt_…:wh_…
 <custom headers from the subscription, with {hmac_signature} and {hmac_timestamp} substituted>
 ```
 
-Signing `over: "body"` (default) signs the exact request bytes; `over: "path"` signs the URL path. Receivers reject a timestamp older than 5 minutes. Delivery expects a `2xx` within 5 s; otherwise retried up to 10 times, 10 s apart, including after a read timeout.
+Signing `over: "body"` (default) signs `<timestamp>.<exact request bytes>`; `over: "path"` signs `<timestamp>.<URL path>` — the timestamp is in the signed text, so a replay cannot freshen it (`Signing` in `modules/protocol`). Receivers reject a timestamp older than 5 minutes. Delivery expects a `2xx` within 5 s; otherwise retried up to 10 times, 10 s apart, including after a read timeout.
 
 ## Envelope
 
@@ -39,4 +39,4 @@ Signing `over: "body"` (default) signs the exact request bytes; `over: "path"` s
 | `dataset.failed` | `SOLVING_FAILED` |
 | `webhook.failing` | a subscription's delivery attempts were exhausted; `data: { subscriptionId, url, failedEventId, failedEventType, attempts, lastStatus, lastError }`; sent to the tenant's *other* subscriptions that list it, at most once per two hours per failing subscription |
 
-Subscriptions select with `events` (`dataset.*` or exact types) and `filters` (`status`, `nameRegex`, `tags` all-of, `model`). Filters apply to `dataset.*` only. Payloads never carry a solution.
+Subscriptions select with `events` (`dataset.*` or exact types) and `filters` (`status`, `nameRegex`, `tags` all-of, `model`). Filters apply to `dataset.*` only. A subscription hears only events that happen after it was made. Payloads never carry a solution.

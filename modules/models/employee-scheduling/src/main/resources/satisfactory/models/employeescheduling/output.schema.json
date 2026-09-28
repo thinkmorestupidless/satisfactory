@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://satisfactory.thinkmorestupidless.com/models/employee-scheduling/v1/output",
+  "title": "EmployeeSchedule",
+  "description": "The input with every shift assigned. Accepted unchanged as input, which is how from-input select=SOLVED continues a plan.",
+  "type": "object",
+  "required": ["employees", "shifts"],
+  "properties": {
+    "employees": { "type": "array", "items": { "type": "object" } },
+    "shifts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "employee"],
+        "properties": { "employee": { "type": ["string", "null"] } }
+      }
+    }
+  }
+}
