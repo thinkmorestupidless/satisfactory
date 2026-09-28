@@ -137,8 +137,20 @@ trait ApiFixture extends munit.FunSuite:
     assert(wanted.contains(last.get("solverStatus").asText()), s"$id is ${last.get("solverStatus")} after $timeout: $last")
     last
 
+  /**
+   * A terminal status, or `DATASET_COMPUTED` when it stays: for `operation=NONE` it is where the
+   * dataset ends, for a solve it lasts the milliseconds between the runner's `computed` and
+   * `started` phases, and a single read cannot tell the two apart.
+   */
   protected def awaitFinal(id: String, timeout: FiniteDuration = 90.seconds, key: Option[String] = Some(keyA)): JsonNode =
-    awaitStatus(id, SolvingStatus.terminal + SolvingStatus.DatasetComputed, timeout, key)
+    val deadline = System.nanoTime() + timeout.toNanos
+    var last     = awaitStatus(id, SolvingStatus.terminal + SolvingStatus.DatasetComputed, timeout, key)
+    while last.get("solverStatus").asText() == SolvingStatus.DatasetComputed && System.nanoTime() < deadline do
+      Thread.sleep(500)
+      val again = metadata(id, key)
+      if again.get("solverStatus").asText() == SolvingStatus.DatasetComputed then return again
+      last = awaitStatus(id, SolvingStatus.terminal + SolvingStatus.DatasetComputed, timeout, key)
+    last
 
   protected def eventually[A](timeout: FiniteDuration = 30.seconds)(probe: => A)(condition: A => Boolean): A =
     val deadline = System.nanoTime() + timeout.toNanos
