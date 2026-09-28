@@ -82,6 +82,7 @@ class EmployeeSchedulingSuite extends munit.FunSuite:
     assertEquals(scoreWith(weights("missingRequiredSkillWeight" -> 0L)), "0hard/0soft")
   }
 
+  // docs:start ablation
   test("ablation: each constraint's contribution, and together they are the score") {
     val problem  = runtime.problem(small, weights())
     val shifts   = problem.asInstanceOf[EmployeeSchedule].getShifts.asScala
@@ -98,7 +99,9 @@ class EmployeeSchedulingSuite extends munit.FunSuite:
     assertEquals(undesired.weight(), "0hard/3soft")
     assertEquals(runtime.score(problem).score(), analysis.score(), "the solution's own weights are restored")
   }
+  // docs:end ablation
 
+  // docs:start solve
   test("solving the small demo reaches a feasible schedule within seconds") {
     runtime.startSolving(1)
     try
@@ -118,3 +121,4 @@ class EmployeeSchedulingSuite extends munit.FunSuite:
       assertEquals(model.kpis(best.asInstanceOf[EmployeeSchedule]).get("unassignedShifts").asInt(), 0)
     finally runtime.close()
   }
+  // docs:end solve

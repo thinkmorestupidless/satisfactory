@@ -1,0 +1,64 @@
+# What a tag publishes. The documentation site is published from main by docs.yml; a release adds the
+# Claude Code plugin, so that a version of the plugin holds the documentation of that release.
+name: release
+on:
+  push:
+    tags: ['v*']
+
+jobs:
+  marketplace:
+    # The Claude Code marketplace is thinkmorestupidless/ankka-marketplace, one plugin per project. This
+    # job clones it, replaces `plugins/satisfactory/` with the rendered plugin, writes satisfactory's
+    # entry into the manifest's `plugins` list without touching the others, and pushes an ordinary
+    # commit — never a force push, which would erase ankka's plugin. The manifest's name, owner and
+    # description, and the README, are ankka's, published by ankka's own release.
+    #
+    # Needs `MARKETPLACE_REPO_TOKEN`: a token with contents:write on ankka-marketplace, because the
+    # workflow's own token has no access to another repository.
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # With credentials persisted, git would use the workflow's own token for every github.com
+          # URL and the push below would authenticate as github-actions[bot] and be refused.
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v10.2.0
+        with:
+          python-version: "3.12"
+      # The committed plugin must be the one the pages render to: a stale plugin is a failed release,
+      # not a stale marketplace.
+      - run: uv run --project tools/docs docs check
+      - run: |
+          set -euo pipefail
+          version="${GITHUB_REF_NAME#v}"
+          remote="https://x-access-token:${{ secrets.MARKETPLACE_REPO_TOKEN }}@github.com/thinkmorestupidless/ankka-marketplace.git"
+          # The plugin's version is the release whose documentation it carries: 0.0.0 in the tree,
+          # written here, so no tracked file is rewritten by the build.
+          sed -i "s/\"version\": \"0.0.0\"/\"version\": \"$version\"/" marketplace/plugins/satisfactory/.claude-plugin/plugin.json
+          grep -n "\"version\": \"$version\"" marketplace/plugins/satisfactory/.claude-plugin/plugin.json
+          git clone --depth 1 "$remote" "$RUNNER_TEMP/marketplace"
+          cd "$RUNNER_TEMP/marketplace"
+          git config user.name "satisfactory release"
+          git config user.email "release@satisfactory.invalid"
+          rm -rf plugins/satisfactory
+          mkdir -p plugins
+          cp -R "$GITHUB_WORKSPACE/marketplace/plugins/satisfactory" plugins/satisfactory
+          # The entry is the plugin's own manifest, as the marketplace lists it; every other entry is
+          # another project's and is kept as found. The list is sorted so the file is the same
+          # whichever project released last.
+          entry="$(jq -c '{name, source: ("./plugins/" + .name), description, version}' plugins/satisfactory/.claude-plugin/plugin.json)"
+          jq --argjson entry "$entry" \
+            '.plugins = ([.plugins[] | select(.name != $entry.name)] + [$entry] | sort_by(.name))' \
+            .claude-plugin/marketplace.json > "$RUNNER_TEMP/manifest.json"
+          mv "$RUNNER_TEMP/manifest.json" .claude-plugin/marketplace.json
+          jq . .claude-plugin/marketplace.json
+          git add -A
+          git commit -m "satisfactory $version"
+          # ankka's release may have pushed since the clone; rebase onto it and try again.
+          for attempt in 1 2 3; do
+            git push "$remote" HEAD:main && break
+            [ "$attempt" = 3 ] && exit 1
+            git pull --rebase "$remote" main
+          done
+          git tag -f "satisfactory-${GITHUB_REF_NAME}"
+          git push --force "$remote" "satisfactory-${GITHUB_REF_NAME}"

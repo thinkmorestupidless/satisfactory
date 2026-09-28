@@ -1,0 +1,123 @@
+# The documentation site. The source is docs/, plain Markdown with YAML frontmatter; this file says how
+# MkDocs renders it for people and, under `extra.docs`, what ankka's docs tool needs to know about this
+# repository. Everything machine-facing — llms.txt, llms-full.txt, raw Markdown per page,
+# docs-index.json and the agent skills — is rendered from the same tree by
+# `uv run --project tools/docs docs build`. See docs/contributing/documentation.md.
+site_name: satisfactory
+site_description: Constraint solving as a service — submit a planning problem to a model, follow the stream of improving solutions, and receive the result by webhook. Built on Timefold Solver, deployed as ankka services.
+site_url: https://satisfactory.ankka.cloud/
+repo_url: https://github.com/thinkmorestupidless/satisfactory
+repo_name: thinkmorestupidless/satisfactory
+edit_uri: edit/main/docs/
+docs_dir: docs
+site_dir: target/docs-site
+
+validation:
+  omitted_files: warn
+  absolute_links: warn
+  unrecognized_links: warn
+  anchors: warn
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.indexes
+    - navigation.top
+    - navigation.footer
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.action.edit
+    - content.tabs.link
+    - toc.follow
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: black
+      accent: deep orange
+      toggle:
+        icon: material/weather-night
+        name: Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: deep orange
+      toggle:
+        icon: material/weather-sunny
+        name: Light mode
+
+# Deliberately plain, as ankka's pages are: no admonitions, no snippet syntax. A page must read
+# correctly with no renderer at all, because that is how a model most often receives it. The one
+# exception is `pymdownx.blocks.tab`, for a page that shows the same thing in more than one language.
+markdown_extensions:
+  - toc:
+      permalink: true
+  - tables
+  - pymdownx.highlight:
+      anchor_linenums: false
+  - pymdownx.superfences
+  - pymdownx.blocks.tab:
+      alternate_style: true
+
+extra:
+  generator: false
+  # What ankka's docs tool needs to know about this repository. The tool is ankka's; the rules are on
+  # docs/contributing/documentation.md.
+  docs:
+    facets:
+      languages: [scala, java]
+      models: [employee-scheduling, vehicle-routing]
+    skills:
+      source: tools/docs/skill
+      targets:
+        - path: marketplace/plugins/satisfactory/skills
+    generated:
+      configuration:
+        kind: hocon
+        files:
+          - { path: modules/api/src/main/resources/application.conf, scope: api }
+          - { path: modules/solver/src/main/resources/application.conf, scope: solver }
+        prefix: satisfactory.
+        described-on: reference/configuration.md
+    site-links:
+      retired-hosts: []
+      files: [README.md, marketplace/plugins/satisfactory/.claude-plugin/plugin.json]
+
+nav:
+  - Home: index.md
+  - Get started:
+      - Run it on your machine: get-started/run-locally.md
+      - Your first solve: get-started/first-solve.md
+      - Work with a coding agent: get-started/coding-agents.md
+  - Concepts:
+      - How satisfactory works: concepts/architecture.md
+      - Models and datasets: concepts/models-and-datasets.md
+      - Lineage instead of mutation: concepts/lineage.md
+      - Receiving results: concepts/receiving-results.md
+      - Workers and leases: concepts/workers-and-leases.md
+      - Tenants, keys and profiles: concepts/tenancy.md
+  - Build:
+      - Submit and poll: build/submit-and-poll.md
+      - Stream progress: build/streaming.md
+      - Receive webhooks: build/webhooks.md
+      - Configuration profiles: build/configuration-profiles.md
+      - Use the client: build/client.md
+      - From an ankka application: build/ankka-applications.md
+      - Write a model: build/models.md
+  - Deploy and operate:
+      - Deploy on ankka: deploy/deploy-on-ankka.md
+      - Operate the service: deploy/operate.md
+  - Reference:
+      - Model API: reference/model-api.md
+      - Platform API: reference/platform-api.md
+      - Dataset lifecycle: reference/dataset-lifecycle.md
+      - Webhook events: reference/webhook-events.md
+      - Configuration: reference/configuration.md
+      - Employee scheduling: reference/employee-scheduling.md
+      - Vehicle routing: reference/vehicle-routing.md
+      - Divergences from Timefold: reference/divergences.md
+      - Limitations: reference/limitations.md
+      - Glossary: reference/glossary.md
+  - Contributing:
+      - Writing documentation: contributing/documentation.md

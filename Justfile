@@ -19,3 +19,15 @@ images:
 # Refuse unformatted commits (once per clone)
 hooks:
     git config core.hooksPath .githooks
+
+# Check every page, then build the site, llms.txt, llms-full.txt, docs-index.json and the skills
+docs:
+    uv run --project tools/docs docs build
+
+# Refresh included samples, generated tables and the rendered skills from their sources
+docs-sync:
+    uv run --project tools/docs docs sync
+
+# The site with live reload, while writing
+docs-serve:
+    uv run --project tools/docs docs serve

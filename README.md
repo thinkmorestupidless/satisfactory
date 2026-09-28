@@ -9,9 +9,10 @@ Built through feature `001-constraint-solving-service` (phases 1–4 of the buil
 
 | Document | What it is |
 |---|---|
+| [satisfactory.ankka.cloud](https://satisfactory.ankka.cloud/) | The documentation: get started, concepts, guides and reference, built from [`docs/`](docs/) and published as a site, `llms.txt` and agent skills |
 | [`DESIGN.md`](DESIGN.md) | The system: why it is shaped the way it is, the job entity and its fold rules, the runner protocol and pool, how it is hosted on ankka, what it asks of ankka, the three artefacts (`satisfactory`, `satisfactory-client`, `ankka-satisfactory`), and the build order |
 | [`API.md`](API.md) | The public API: a reimplementation of the Timefold Platform model API, with every divergence listed and justified. Supersedes the API parts of `DESIGN.md` |
-| [`docs/timefold/`](docs/timefold/) | The two Timefold OpenAPI specs the API is derived from: the Employee Shift Scheduling model API (`v1`) and the Platform API (`1.12.3`) |
+| [`notes/timefold/`](notes/timefold/) | The two Timefold OpenAPI specs the API is derived from: the Employee Shift Scheduling model API (`v1`) and the Platform API (`1.12.3`) |
 
 Read `API.md` first if you want to know what it does; `DESIGN.md` if you want to know how.
 
@@ -54,4 +55,5 @@ curl -s -H 'X-API-KEY: sk_dev' $API/schedules/<id>/metadata      # poll until SO
 curl -s -H 'X-API-KEY: sk_dev' $API/schedules/<id>               # the schedule, score and KPIs
 ```
 
-`sbt test` runs every suite (Docker required). `CLAUDE.md` lists the rest.
+`sbt test` runs every suite (Docker required). `just docs` builds the documentation site into
+`target/docs-site`; `just docs-serve` serves it with live reload. `CLAUDE.md` lists the rest.

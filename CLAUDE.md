@@ -47,11 +47,34 @@ sbt 'api/testOnly *DatasetEntitySuite'     # the fold rules, no database
 sbt 'api/testOnly *HttpSuite'              # the API in one JVM (quickstart tier 3)
 sbt 'spike/run 10'                         # phase 0: watch a solve improve
 just db && just run-api                    # the whole system in one process on :9000
+just docs                                  # check every page and build the docs site (uv)
+just docs-sync                             # refresh included samples, the config table, the skills
 sbt api/Docker/publishLocal solver/Docker/publishLocal deployDescriptors
 ```
 
 Tests are serialised (`Tags.limit(Tags.Test, 1)`): overlapping Postgres suites contend. Do not
 "optimise" this back.
+
+## Documentation
+
+One tree, `docs/`, of plain Markdown with YAML frontmatter, built by ankka's docs tool (a `uv`
+dependency named in `tools/docs/pyproject.toml`; the settings are `extra.docs` in `mkdocs.yml`): the
+MkDocs Material site at satisfactory.ankka.cloud, `llms.txt`, `llms-full.txt`, Markdown per page,
+`docs-index.json`, and four Agent Skills curated in `tools/docs/skill/<name>/SKILL.md` and rendered
+into `marketplace/plugins/satisfactory/skills/` (committed; `docs check` fails when stale). The rules
+are ankka's, on `docs/contributing/documentation.md` here and in full at
+docs.ankka.cloud/contributing/documentation/. The ones that bite:
+
+- **A page stands alone and tells no history.** No "see above", no feature or task numbers, no
+  "decided on"; `docs check` refuses both. `API.md` and `DESIGN.md` are design records, not pages.
+- **Samples are included from tested code** between `// docs:start name` and `// docs:end name`
+  markers, named by `<!-- include: path#name -->` before the block; `just docs-sync` copies them and
+  `docs check` fails on drift. The markers are in `ClientSuite`, `PlannerWorkflowSuite`,
+  `FakeSatisfactorySuite`, `EmployeeSchedulingSuite`, `WorkerSuite` and `EmployeeScheduling.java`.
+- **The configuration table is generated** from both `application.conf` files, and the prose on
+  `reference/configuration.md` must mention every `SAT_*` variable.
+- **A new page goes in `mkdocs.yml`'s `nav` and in a skill's `pages:` list**, or `docs check` fails.
+- `notes/` holds what is not documentation: the Timefold OpenAPI specs and the ankka follow-ups.
 
 ## Things that are not what they look like
 

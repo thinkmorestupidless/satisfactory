@@ -6,7 +6,7 @@ with a reason, and write the divergences down. Timefold have run this as a produ
 encode operational experience we do not have.
 
 Written 2026-09-22 from the public docs and the two OpenAPI specs saved under
-[`docs/timefold/`](docs/timefold/): the Employee Shift Scheduling model API (`v1`, OpenAPI 3.0.3,
+[`notes/timefold/`](notes/timefold/): the Employee Shift Scheduling model API (`v1`, OpenAPI 3.0.3,
 532 schemas) and the Platform API (`1.12.3`). Field names below are theirs unless a divergence says
 otherwise. Supersedes `DESIGN.md` §3.1, §3.2 and §4.
 
@@ -335,7 +335,7 @@ subscriptions in `TenantEntity`; the delivery log a `View`.
 
 Separate from the model APIs, authenticated with a **personal access token** (`Authorization:
 Bearer`); `X-TF-TENANT-ID` selects the tenant when the caller belongs to several. Spec:
-[`docs/timefold/platform-api-1.12.3.json`](docs/timefold/platform-api-1.12.3.json) — "intended for
+[`notes/timefold/platform-api-1.12.3.json`](notes/timefold/platform-api-1.12.3.json) — "intended for
 customers to interact with the platform (not models)". Smaller than the docs' prose suggests:
 members, API keys, webhooks, the queue and the audit log are UI-only. Three areas under
 `/api/platform/v1/`:
@@ -455,8 +455,8 @@ schema is `Metadata`). Neither blocks the design.
 
 ## Sources
 
-- Specs: [`docs/timefold/employee-scheduling-v1.json`](docs/timefold/employee-scheduling-v1.json) ·
-  [`docs/timefold/platform-api-1.12.3.json`](docs/timefold/platform-api-1.12.3.json)
+- Specs: [`notes/timefold/employee-scheduling-v1.json`](notes/timefold/employee-scheduling-v1.json) ·
+  [`notes/timefold/platform-api-1.12.3.json`](notes/timefold/platform-api-1.12.3.json)
 - [Introduction](https://docs.timefold.ai/timefold-platform/latest/introduction) ·
   [Platform concepts](https://docs.timefold.ai/timefold-platform/latest/concepts) ·
   [Getting started](https://docs.timefold.ai/timefold-platform/latest/getting-started-with-the-timefold-platform)

@@ -23,6 +23,7 @@ object Satisfactory:
 
 final case class PlanRequest(workflowId: String, brief: String)
 
+// docs:start agent
 /** An agent that decides what to solve, and submits it with the generated tool. */
 final class SchedulerAgent extends Agent:
   def plan(request: PlanRequest): Effect[String] =
@@ -37,9 +38,11 @@ object SchedulerAgent extends Agent.Companion[SchedulerAgent](ComponentId("sched
   given Serializer[PlanRequest] = Codecs.serializer[PlanRequest]("plan-request")
   def create(context: AgentContext) = new SchedulerAgent
   val plan                          = command("plan")(_.plan)
+// docs:end agent
 
 final case class Roster(status: String, datasetId: Option[String], score: Option[String], resumed: Int)
 
+// docs:start workflow
 /** The wait belongs to a workflow, not the agent (DESIGN.md §11.2b): it pauses until the webhook. */
 final class RosterWorkflow(context: WorkflowContext) extends Workflow[Roster]:
   def emptyState: Roster = Roster("new", None, None, 0)
@@ -72,7 +75,9 @@ object RosterWorkflow extends Workflow.Companion[RosterWorkflow, Roster](Compone
   val start         = command("start")(_.start)
   val solutionReady = command("solution-ready")(_.solutionReady)
   val get           = query("get")(_.get)
+// docs:end workflow
 
+// docs:start endpoint
 /** The developer's own endpoint: its path, its ACL. The library only checks and decodes. */
 final class HooksEndpoint(client: ComponentClient) extends HttpEndpoint("/hooks"):
   val acl: Acl = Acl.AllowIf(SatisfactoryWebhook.looksSigned())
@@ -88,6 +93,7 @@ final class HooksEndpoint(client: ComponentClient) extends HttpEndpoint("/hooks"
       case Left(refusal) => throw HttpProblem.unauthorized(refusal.toString)
     answered
   }
+// docs:end endpoint
 
 /**
  * Story 9 end to end (quickstart tier 6): an agent submits through the generated tool, the workflow
@@ -101,6 +107,7 @@ class PlannerWorkflowSuite extends munit.FunSuite:
   private var testKit: AnkkaTestKit = null
   private var hooks: String         = ""
 
+  // docs:start wiring
   override def beforeAll(): Unit =
     Satisfactory.client = fake.client()
     val server = HttpServer.at("127.0.0.1", 0)(clients => HooksEndpoint(clients.componentClient))
@@ -109,6 +116,7 @@ class PlannerWorkflowSuite extends munit.FunSuite:
       Seq(AgentRuntime.withDefaultModel(model), server)
     )
     hooks = s"http://127.0.0.1:${server.boundPort.get}/hooks/satisfactory"
+  // docs:end wiring
 
   override def afterAll(): Unit =
     if testKit != null then testKit.stop()
