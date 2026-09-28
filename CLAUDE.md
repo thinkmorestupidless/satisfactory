@@ -90,8 +90,9 @@ docs.ankka.cloud/contributing/documentation/. The ones that bite:
   built from `../ankka` HEAD, a runtime without it fails at startup with `password authentication
   failed for user "api"`.
 - In a cluster every service port is mutual TLS, so the solver reaches `api` through ankka's service
-  client (`ServiceControlChannel`, from `service.services("api")`), never by URL. `SAT_API_URL` is
-  the plain-HTTP path for a laptop or a test and stays unset in `deploy/solver.json`.
+  client (`ServiceControlChannel`, from `service.services("api")`), never by URL; the solver decides
+  by `ankka.tls.service-directory`, which only a platform sets. `SAT_API_URL` is the plain-HTTP path
+  for a laptop or a test, and `deploy/solver.json` does not set it.
 - `import satisfactory.protocol.*` shadows a same-named type defined in another file of the current
   package (`DatasetEvent` exists in both `protocol` and `api.application`); import the local one
   explicitly. Stale incremental state can hide this until `sbt clean`.

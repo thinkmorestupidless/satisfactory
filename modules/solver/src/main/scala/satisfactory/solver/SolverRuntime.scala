@@ -13,11 +13,9 @@ import scala.concurrent.duration.*
 
 /** The `satisfactory.solver` block, and the environment a deployment sets. */
 final case class SolverSettings(
-    /**
-     * Set: `api` over plain HTTP at this address (a laptop, a test). Empty: the ankka service
-     * `apiService`.
-     */
+    /** Where `api` answers over plain HTTP, on a laptop or in a test; a cluster ignores it. */
     apiUrl: String,
+    /** The ankka service the solver calls as itself in a cluster. */
     apiService: String,
     runnerToken: String,
     workerId: String,
@@ -79,11 +77,14 @@ object SolverRuntime:
   def catalog: ModelCatalog = ModelCatalog.of(EmployeeScheduling.V1, VehicleRouting.V1)
 
   /**
-   * How `api` is reached: by URL over plain HTTP when one is configured, otherwise as the ankka
-   * service of that name, called as this service — mutual TLS in a cluster, where nothing else gets
-   * onto a service's port, and the local registry on a laptop.
+   * How `api` is reached, decided by where the solver runs. In a cluster — where the platform gave
+   * this workload a certificate, `ankka.tls.service-directory` — every service port is mutual TLS,
+   * so the api is the ankka service `api-service`, called as this service. Anywhere else it is
+   * `api-url` over plain HTTP: a laptop's `sbt api/run`, or a test's bound port.
    */
-  def channel(settings: SolverSettings): AnkkaService => ControlChannel =
-    if settings.apiUrl.nonEmpty then _ => HttpControlChannel(settings.apiUrl, settings.runnerToken)
-    else
-      service => ServiceControlChannel(service.services(settings.apiService), settings.runnerToken)
+  def channel(settings: SolverSettings): AnkkaService => ControlChannel = service =>
+    val config    = service.system.settings.config
+    val directory = "ankka.tls.service-directory"
+    if config.hasPath(directory) && config.getString(directory).trim.nonEmpty then
+      ServiceControlChannel(service.services(settings.apiService), settings.runnerToken)
+    else HttpControlChannel(settings.apiUrl, settings.runnerToken)
