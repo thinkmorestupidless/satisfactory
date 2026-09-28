@@ -10,6 +10,7 @@ import scala.jdk.CollectionConverters.*
 /** The plain client against the real API in this JVM (Story 9, the half with no ankka). */
 class ClientSuite extends ApiFixture:
 
+  // docs:start submit
   private lazy val client     = SatisfactoryClient(baseUrl, keyA)
   private lazy val scheduling = client.model("employee-scheduling", "v1")
 
@@ -28,7 +29,9 @@ class ClientSuite extends ApiFixture:
     assert(scheduling.list(ListFilter(tags = List("client"))).content.exists(_.id == created.id))
     assertEquals(client.aboutMe().tenantId, "t_a")
   }
+  // docs:end submit
 
+  // docs:start events
   test("the event iterator unwraps frames, ends on the final one, and resumes after a given seq") {
     val id     = scheduling.submit(SubmitRequest(scheduling.demoInput("SMALL"), Some(ModelConfiguration(run = Some(RunConfiguration(termination = Some(TerminationConfig(spentLimit = Some("PT4S"))))))))).id
     val frames = scheduling.events(id).toList
@@ -40,7 +43,9 @@ class ClientSuite extends ApiFixture:
     val resumed = scheduling.events(id, after = Some(updates.head.seq)).toList.collect { case u: StreamFrame.Update => u }
     assert(resumed.nonEmpty && resumed.forall(_.seq > updates.head.seq), resumed.toString)
   }
+  // docs:end events
 
+  // docs:start publisher
   test("the publisher delivers the same frames to a reactive subscriber") {
     val id       = scheduling.submit(SubmitRequest(scheduling.demoInput("SMALL"), Some(ModelConfiguration(run = Some(RunConfiguration(termination = Some(TerminationConfig(spentLimit = Some("PT2S"))))))))).id
     val received = CopyOnWriteArrayList[StreamFrame]()
@@ -54,7 +59,9 @@ class ClientSuite extends ApiFixture:
     assert(finished.await(60, TimeUnit.SECONDS))
     assert(received.asScala.exists { case u: StreamFrame.Update => u.metadata.solverStatus == SolvingStatus.Completed; case _ => false })
   }
+  // docs:end publisher
 
+  // docs:start errors
   test("refusals are typed: ErrorInfo from the API, and ankka's own 401") {
     val invalid = intercept[SatisfactoryError](scheduling.submit(SubmitRequest(RawJson("""{"shifts":"no"}"""))))
     assertEquals(invalid.status, 400)
@@ -63,7 +70,9 @@ class ClientSuite extends ApiFixture:
     assertEquals(unauthorised.status, 401)
     assert(unauthorised.info.message.nonEmpty)
   }
+  // docs:end errors
 
+  // docs:start lineage
   test("lineage, terminate, metadata, purge and restore") {
     val parent = scheduling.submit(SubmitRequest(scheduling.demoInput("SMALL"), Some(ModelConfiguration(run = Some(RunConfiguration(termination = Some(TerminationConfig(spentLimit = Some("PT60S"))))))))).id
     val _      = scheduling.events(parent).find { case u: StreamFrame.Update => u.metadata.score.isDefined && u.metadata.solverStatus == SolvingStatus.Active; case _ => false }
@@ -78,3 +87,4 @@ class ClientSuite extends ApiFixture:
     scheduling.restore(child.id)
     assert(scheduling.get(child.id).modelOutput.isDefined)
   }
+  // docs:end lineage

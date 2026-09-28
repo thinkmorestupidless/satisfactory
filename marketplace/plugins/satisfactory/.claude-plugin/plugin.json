@@ -1,0 +1,20 @@
+{
+  "name": "satisfactory",
+  "version": "0.0.0",
+  "description": "The satisfactory documentation as skills — the service and its API, the Scala client, using it from an ankka application, and writing a model.",
+  "author": {
+    "name": "thinkmorestupidless",
+    "url": "https://github.com/thinkmorestupidless/satisfactory"
+  },
+  "homepage": "https://satisfactory.ankka.cloud/",
+  "repository": "https://github.com/thinkmorestupidless/ankka-marketplace",
+  "license": "Apache-2.0",
+  "keywords": [
+    "satisfactory",
+    "ankka",
+    "timefold",
+    "constraint-solving",
+    "scheduling",
+    "vehicle-routing"
+  ]
+}

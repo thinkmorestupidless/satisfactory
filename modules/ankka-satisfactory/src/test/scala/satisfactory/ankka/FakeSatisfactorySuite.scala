@@ -13,6 +13,7 @@ class FakeSatisfactorySuite extends munit.FunSuite:
   private def metadata(id: String, tags: List[String] = Nil, status: String = SolvingStatus.Scheduled) =
     Metadata(id, None, None, None, tags, status, None, Some(Instant.now()), None, None, None, None, None, None, None, None, 1)
 
+  // docs:start script
   test("the catalog is always answered; scripted calls answer in order and are recorded") {
     val fake = FakeSatisfactory(descriptor)
     try
@@ -25,6 +26,7 @@ class FakeSatisfactorySuite extends munit.FunSuite:
       fake.verifyScript()
     finally fake.close()
   }
+  // docs:end script
 
   test("a script that runs out fails loudly, naming the call") {
     val fake = FakeSatisfactory(descriptor)

@@ -1,0 +1,11 @@
+# The documentation build. The tool is ankka's: everything specific to this repository is `extra.docs`
+# in mkdocs.yml, and `uv run --project tools/docs docs build` here does what it does there. See
+# docs/contributing/documentation.md, and the same page in ankka's documentation for the rules.
+[project]
+name = "satisfactory-docs"
+version = "0.0.0"
+description = "Builds satisfactory's documentation with ankka's docs tool."
+requires-python = ">=3.12"
+dependencies = [
+    "ankka-docs @ git+https://github.com/thinkmorestupidless/ankka@shared-docs-tool#subdirectory=tools/docs",
+]

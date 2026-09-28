@@ -18,6 +18,7 @@ class WorkerSuite extends munit.FunSuite:
     while !condition && System.nanoTime() < deadline do Thread.sleep(100)
     assert(condition, s"not within $timeout")
 
+  // docs:start queue
   test("one slot works through a queue one dataset at a time") {
     val channel = ScriptedChannel()
     channel.enqueue(ScriptedChannel.claim("ds_a", spentLimit = "PT1S"), small)
@@ -34,6 +35,7 @@ class WorkerSuite extends munit.FunSuite:
     assert(channel.calls.asScala.contains("register w1"))
     assert(channel.calls.asScala.contains("deregister w1"))
   }
+  // docs:end queue
 
   test("stopping a worker releases what it holds before it deregisters") {
     val channel = ScriptedChannel()

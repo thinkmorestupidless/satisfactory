@@ -32,6 +32,7 @@ public final class EmployeeScheduling implements SolverModel<EmployeeSchedule, H
 
     public static final EmployeeScheduling V1 = new EmployeeScheduling();
 
+    // docs:start constraints
     /** In the constraint provider's order. Names are the provider's; keys are the request's weight fields. */
     static final List<ConstraintInfo> CONSTRAINTS = List.of(
             new ConstraintInfo("Missing required skill", "missingRequiredSkill",
@@ -51,6 +52,7 @@ public final class EmployeeScheduling implements SolverModel<EmployeeSchedule, H
                     "An employee works on a day they want to; rewarded per minute.", Level.SOFT, 1),
             new ConstraintInfo("Balance employee shift assignments", "balanceEmployeeShiftAssignments",
                     "Shift counts are uneven across employees; penalised by their unfairness.", Level.SOFT, 1));
+    // docs:end constraints
 
     private static final ScoreCodec<HardSoftBigDecimalScore> SCORE = new ScoreCodec<>() {
         @Override
@@ -77,6 +79,7 @@ public final class EmployeeScheduling implements SolverModel<EmployeeSchedule, H
     private EmployeeScheduling() {
     }
 
+    // docs:start identity
     @Override
     public ModelKey key() {
         return new ModelKey("employee-scheduling", "v1", "schedules");
@@ -95,6 +98,7 @@ public final class EmployeeScheduling implements SolverModel<EmployeeSchedule, H
                         + "balanced against preferences.",
                 List.of("pinning", "real-time planning", "weights"));
     }
+    // docs:end identity
 
     @Override
     public JsonSchema inputSchema() {
@@ -136,6 +140,7 @@ public final class EmployeeScheduling implements SolverModel<EmployeeSchedule, H
         return DemoData.ALL;
     }
 
+    // docs:start config
     @Override
     public SolverConfig baseConfig() {
         return new SolverConfig()
@@ -143,12 +148,14 @@ public final class EmployeeScheduling implements SolverModel<EmployeeSchedule, H
                 .withEntityClasses(Shift.class)
                 .withConstraintProviderClass(EmployeeSchedulingConstraintProvider.class);
     }
+    // docs:end config
 
     @Override
     public ScoreCodec<HardSoftBigDecimalScore> scoreCodec() {
         return SCORE;
     }
 
+    // docs:start codecs
     @Override
     public EmployeeSchedule decodeProblem(JsonNode modelInput) throws InvalidDataset {
         return EmployeeSchedulingCodecs.decode(modelInput, false);
@@ -163,6 +170,7 @@ public final class EmployeeScheduling implements SolverModel<EmployeeSchedule, H
     public JsonNode encodeSolution(EmployeeSchedule solution) {
         return EmployeeSchedulingCodecs.encode(solution);
     }
+    // docs:end codecs
 
     @Override
     public ValidationResult validate(EmployeeSchedule problem) {
@@ -179,6 +187,7 @@ public final class EmployeeScheduling implements SolverModel<EmployeeSchedule, H
         return EmployeeSchedulingMetrics.kpis(solution);
     }
 
+    // docs:start weights
     @Override
     public void setWeights(EmployeeSchedule solution, ConstraintWeightOverrides<HardSoftBigDecimalScore> overrides) {
         solution.setConstraintWeightOverrides(overrides);
@@ -188,4 +197,5 @@ public final class EmployeeScheduling implements SolverModel<EmployeeSchedule, H
     public HardSoftBigDecimalScore score(EmployeeSchedule solution) {
         return solution.getScore();
     }
+    // docs:end weights
 }

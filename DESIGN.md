@@ -403,7 +403,7 @@ In the order it will hurt:
    design. The right signal is queue depth ÷ free slots, which `JobsView` already knows. Until
    ankka acts on autoscaling at all, the pool is a fixed size and the queue absorbs the rest.
 3. **SSE `id:` frames**, so `Last-Event-ID` resumption works with a plain `EventSource`.
-   Now tracked with the rest in [`docs/ankka-requests.md`](docs/ankka-requests.md).
+   Now tracked with the rest in [`notes/ankka-requests.md`](notes/ankka-requests.md).
 4. **To verify before building:** the HTTP request-body limit (pekko-http's default is 8 MB;
    Timefold accepts 100 MB gzip / 2 GB raw, and `Content-Encoding: gzip` must be honoured), the
    gateway's idle timeout against a quiet SSE stream (hence heartbeats),
