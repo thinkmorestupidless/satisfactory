@@ -65,4 +65,6 @@ The configuration reference's table is generated from the two services' `applica
 
 Four skills are curated under `tools/docs/skill/`, one `SKILL.md` each, and rendered into
 `marketplace/plugins/satisfactory/skills/`, which is committed and checked. The rendered plugin is what
-the ankka marketplace publishes as `satisfactory`.
+the ankka marketplace publishes as `satisfactory`: on every tag, the release workflow clones the
+marketplace repository, replaces `plugins/satisfactory/` and satisfactory's entry in its manifest, and
+pushes, leaving ankka's plugin as it found it.
