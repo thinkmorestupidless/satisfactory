@@ -55,10 +55,10 @@ ankka services expose api -p satisfactory
 ```
 
 The `api` descriptor sets `SAT_LOCAL_RUNNER` to `false`, so the API hosts no worker of its own, and
-runs three `small` instances. The `solver` descriptor sets `http` to `false`, points `SAT_API_URL` at
-`http://api:9000`, and runs three `large` instances, each with one solving slot, so the pool's capacity
-is its instance count. Both are odd-counted because ankka's cluster overlay keeps the majority side of
-a partition.
+runs three `small` instances. The `solver` descriptor sets `http` to `false` and runs three `large`
+instances, each with one solving slot, so the pool's capacity is its instance count; it names no api
+address, because in a cluster the solver calls the `api` service as itself over mutual TLS. Both are
+odd-counted because ankka's cluster overlay keeps the majority side of a partition.
 
 Two settings the descriptor leaves at their defaults are worth setting on `api`:
 

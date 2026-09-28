@@ -20,6 +20,7 @@ the descriptors under `deploy/` set them from a secret, and a development run se
 | `SAT_AUTH_ISSUER` | `satisfactory.auth.issuer` | `""` | api |
 | `SAT_AUTH_JWKS_URL` | `satisfactory.auth.jwks-url` | `""` | api |
 | `SAT_API_URL` | `satisfactory.solver.api-url` | `"http://localhost:9000"` | solver |
+| `SAT_API_SERVICE` | `satisfactory.solver.api-service` | `"api"` | solver |
 | `SAT_RUNNER_TOKEN` | `satisfactory.solver.runner-token` | `"local-runner-token"` | solver |
 | `SAT_SLOTS` | `satisfactory.solver.slots` | `0` | solver |
 
@@ -76,8 +77,10 @@ request body strictly, which pekko-http caps separately from the content length.
 
 ## The solver
 
-`SAT_API_URL` is where the solver finds the api; in a deployment the descriptor sets it to the api
-service's cluster address. `SAT_SLOTS` is how many datasets one instance solves at once; `0` means one
+How the solver reaches the api depends on where it runs. On a laptop or in a test it is plain HTTP at
+`SAT_API_URL`, `http://localhost:9000` by default. In a cluster every service port is mutual TLS, so
+the solver ignores the URL and calls the ankka service named by `SAT_API_SERVICE`, `api` by default, as
+itself, presenting the certificate the platform mounted; the descriptor sets neither. `SAT_SLOTS` is how many datasets one instance solves at once; `0` means one
 fewer than the instance's cores, and at least one. `heartbeat` is how often each held dataset heartbeats,
 which is also the terminate latency, and `report-interval` is the most often a worker reports an
 improvement, never under 250 milliseconds.
