@@ -3,6 +3,7 @@ package satisfactory.api.application
 import com.thinkmorestupidless.ankka.core.{Codecs, ComponentId, Done, ErrorCode, Serializer}
 import com.thinkmorestupidless.ankka.core.Serializers.given
 import com.thinkmorestupidless.ankka.sdk.*
+import satisfactory.api.application.DatasetEvent // the entity's events, not the webhook envelope of the same name in protocol
 import satisfactory.protocol.*
 
 import java.time.Instant

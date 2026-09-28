@@ -27,7 +27,7 @@ final class ModelsEndpoint(runtime: ModelRuntime[?, ?], ctx: ApiContext)
   private val entity = s"/${runtime.key().entity()}"
   private val rows   = ctx.views.forView(DatasetRows)
 
-  protected def caller: TenantCaller = TenantCaller.of(principal)
+  protected def tenantCaller: TenantCaller = TenantCaller.of(principal)
 
   protected def dataset(id: String) = ctx.client.forEventSourcedEntity(EntityId(id))
 
@@ -39,7 +39,7 @@ final class ModelsEndpoint(runtime: ModelRuntime[?, ?], ctx: ApiContext)
         case e: com.thinkmorestupidless.ankka.core.CommandError
             if e.code == com.thinkmorestupidless.ankka.core.ErrorCode.NotFound =>
           throw ApiError.notFound(s"no dataset $id")
-    if state.tenantId != caller.tenantId || state.spec.exists(_.modelKey != runtime.key().key()) then
+    if state.tenantId != tenantCaller.tenantId || state.spec.exists(_.modelKey != runtime.key().key()) then
       throw ApiError.notFound(s"no dataset $id")
     state
 
@@ -97,7 +97,7 @@ final class ModelsEndpoint(runtime: ModelRuntime[?, ?], ctx: ApiContext)
     handle {
       val submit = Bodies.parse[SubmitRequest](Bodies.decoded(request, body))
       val metadata = ctx.submissions.create(
-        caller,
+        tenantCaller,
         runtime,
         Json.parse(submit.modelInput.bytes),
         submit.config,
@@ -110,7 +110,7 @@ final class ModelsEndpoint(runtime: ModelRuntime[?, ?], ctx: ApiContext)
   /** Solve a dataset submitted with `operation=NONE` (API.md §2.1). */
   post(s"$entity/{id}") { (id: String) =>
     handle {
-      caller.requireWrite()
+      tenantCaller.requireWrite()
       val _ = owned(id)
       json(dataset(id).call(DatasetEntity.solve).invoke(SolveDataset(query.optional[Int]("priority"), ctx.now())), 202)
     }
@@ -124,7 +124,7 @@ final class ModelsEndpoint(runtime: ModelRuntime[?, ?], ctx: ApiContext)
       val page = query.optional[Int]("page").getOrElse(0).max(0)
       val (content, more) = DatasetRows.forTenant(
         rows,
-        caller.tenantId,
+        tenantCaller.tenantId,
         Some(runtime.key().key()),
         query.rawAll("status"),
         query.rawAll("tag") ++ query.rawAll("tags"),
@@ -226,11 +226,11 @@ final class ModelsEndpoint(runtime: ModelRuntime[?, ?], ctx: ApiContext)
    */
   delete(s"$entity/{id}") { (id: String) =>
     handle {
-      caller.requireWrite()
+      tenantCaller.requireWrite()
       val _ = owned(id)
       val _ = dataset(id)
         .call(DatasetEntity.requestTerminate)
-        .invoke(TerminateDataset(caller.keyId, query.flag("force"), ctx.now()))
+        .invoke(TerminateDataset(tenantCaller.keyId, query.flag("force"), ctx.now()))
       val state = owned(id)
       json(
         DatasetResponse(
@@ -253,7 +253,7 @@ final class ModelsEndpoint(runtime: ModelRuntime[?, ?], ctx: ApiContext)
       val parent  = owned(id)
       val decoded = Bodies.decoded(request, body)
       val config  = if decoded.isEmpty then None else Bodies.parse[FromInputRequest](decoded).config
-      json(ctx.derivations.derive(caller, runtime, parent, select(Select.Unsolved), None, config, params()), 202)
+      json(ctx.derivations.derive(tenantCaller, runtime, parent, select(Select.Unsolved), None, config, params()), 202)
     }
   }
 
@@ -263,7 +263,7 @@ final class ModelsEndpoint(runtime: ModelRuntime[?, ?], ctx: ApiContext)
       val parent  = owned(id)
       val request = Bodies.parse[PatchRequest](Bodies.decoded(this.request, body))
       json(
-        ctx.derivations.derive(caller, runtime, parent, select(Select.Solved), Some(request.patch), request.config, params()),
+        ctx.derivations.derive(tenantCaller, runtime, parent, select(Select.Solved), Some(request.patch), request.config, params()),
         202
       )
     }
@@ -314,7 +314,7 @@ final class ModelsEndpoint(runtime: ModelRuntime[?, ?], ctx: ApiContext)
       val input    = Json.parse(request.modelInput.bytes)
       val problems = runtime.validateInput(input).asScala.toList
       if problems.nonEmpty then throw ApiError.validation("the modelInput does not match the model's input schema", problems)
-      val owner   = ctx.client.forEventSourcedEntity(EntityId(caller.tenantId)).call(TenantEntity.get).invoke()
+      val owner   = ctx.client.forEventSourcedEntity(EntityId(tenantCaller.tenantId)).call(TenantEntity.get).invoke()
       val profile = query.raw("configurationId").flatMap(p => ProfileLookup.find(owner, runtime.key().key(), p))
       val config = ConfigResolver.resolve(runtime, None, profile, request.config, scala.concurrent.duration.Duration(owner.limits.lifetimeCeilingSeconds, "s")) match
         case Left(errors)  => throw ApiError.validation("the configuration is invalid", errors)
@@ -327,7 +327,7 @@ final class ModelsEndpoint(runtime: ModelRuntime[?, ?], ctx: ApiContext)
 
   patchBody(s"$entity/{id}/metadata") { (id: String, body: Array[Byte]) =>
     handle {
-      caller.requireWrite()
+      tenantCaller.requireWrite()
       val _      = owned(id)
       val change = Bodies.parse[MetadataPatch](body)
       json(dataset(id).call(DatasetEntity.updateMetadata).invoke(UpdateMetadata(change.name, change.tags)))
@@ -337,7 +337,7 @@ final class ModelsEndpoint(runtime: ModelRuntime[?, ?], ctx: ApiContext)
   /** Purge: the bodies are hidden at once and deleted when the restore window closes. */
   delete(s"$entity/{id}/purge") { (id: String) =>
     handle {
-      caller.requireWrite()
+      tenantCaller.requireWrite()
       val _ = owned(id)
       val _ = dataset(id).call(DatasetEntity.purge).invoke(At(ctx.now()))
       noContent
@@ -347,7 +347,7 @@ final class ModelsEndpoint(runtime: ModelRuntime[?, ?], ctx: ApiContext)
   /** Restore a purged dataset while its retention lasts. */
   put(s"$entity/{id}") { (id: String) =>
     handle {
-      caller.requireWrite()
+      tenantCaller.requireWrite()
       val _ = owned(id)
       val _ = dataset(id).call(DatasetEntity.restore).invoke(At(ctx.now()))
       noContent

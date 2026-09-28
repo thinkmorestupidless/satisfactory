@@ -145,8 +145,8 @@ class SolverServiceSuite extends ApiFixture:
   override protected def configOverrides: Map[String, Any] = Map("satisfactory.local-runner" -> false)
 
   test("a service with no components reaches ready, registers its worker, solves, and releases on terminate") {
-    val settings = SolverSettings(baseUrl, "local-runner-token", "solver-svc", 1, 2.seconds, 1.second)
-    val runtime  = SolverRuntime(settings, SolverRuntime.catalog, HttpControlChannel(baseUrl, "local-runner-token"))
+    val settings = SolverSettings(baseUrl, "api", "local-runner-token", "solver-svc", 1, 2.seconds, 1.second)
+    val runtime  = SolverRuntime(settings, SolverRuntime.catalog, SolverRuntime.channel(settings))
     val service: AnkkaService = Ankka.service.withExtension(runtime).start("satisfactory-solver", ConfigFactory.load())
     try
       service.awaitReady(60.seconds)

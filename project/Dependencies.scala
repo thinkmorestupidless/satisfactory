@@ -7,7 +7,7 @@ object Dependencies {
     val scala = "3.9.0"
 
     /** The platform. Also the `runtime` the deploy descriptors declare. */
-    val ankka = "0.7.1"
+    val ankka = "0.7.1+28-ed931dc0+20260928-1802-SNAPSHOT"
 
     /** Timefold Solver Community (Apache-2.0). Score analysis is Enterprise-only; see research R2. */
     val timefold = "2.7.0"

@@ -61,3 +61,14 @@ Tests are serialised (`Tags.limit(Tags.Test, 1)`): overlapping Postgres suites c
   not only `max-content-length`; both are set in `api`'s `application.conf`.
 - Scala nests block comments: `/internal/*` inside a doc comment opens a new one.
 - ankka's SSE emits `data:` frames whose payload is a JSON-quoted string; the client unwraps it.
+- A deployed service logs in to its Postgres by client certificate, never a password (ankka feature
+  014, unreleased at 0.7.1). `V.ankka` must be a runtime that has `DatabaseTls`, and the blob store's
+  own JDBC pool applies the same `ssl` block through `DatabaseSslSocketFactory`. Against a platform
+  built from `../ankka` HEAD, a runtime without it fails at startup with `password authentication
+  failed for user "api"`.
+- In a cluster every service port is mutual TLS, so the solver reaches `api` through ankka's service
+  client (`ServiceControlChannel`, from `service.services("api")`), never by URL. `SAT_API_URL` is
+  the plain-HTTP path for a laptop or a test and stays unset in `deploy/solver.json`.
+- `import satisfactory.protocol.*` shadows a same-named type defined in another file of the current
+  package (`DatasetEvent` exists in both `protocol` and `api.application`); import the local one
+  explicitly. Stale incremental state can hide this until `sbt clean`.

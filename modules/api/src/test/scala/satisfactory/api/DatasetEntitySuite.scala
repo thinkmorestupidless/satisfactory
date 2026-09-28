@@ -3,6 +3,7 @@ package satisfactory.api
 import com.thinkmorestupidless.ankka.core.{Done, ErrorCode}
 import com.thinkmorestupidless.ankka.testkit.EventSourcedTestKit
 import satisfactory.api.application.*
+import satisfactory.api.application.DatasetEvent // the entity's events, not protocol's webhook envelope
 import satisfactory.protocol.*
 
 import java.time.Instant

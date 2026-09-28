@@ -1,6 +1,6 @@
 package satisfactory.api.blobs
 
-import com.thinkmorestupidless.ankka.runtime.{AnkkaService, RuntimeExtension}
+import com.thinkmorestupidless.ankka.runtime.{AnkkaService, DatabaseTls, RuntimeExtension}
 import com.typesafe.config.Config
 import com.zaxxer.hikari.{HikariConfig, HikariDataSource}
 
@@ -119,6 +119,18 @@ object PostgresBlobStore:
     hc.setPassword(c.getString("password"))
     hc.setMaximumPoolSize(8)
     hc.setPoolName("satisfactory-blobs")
+    // The platform's database speaks TLS and authenticates the service by certificate, not password:
+    // the same `ssl` block ankka's DatabaseTls applies to the journal's pool, applied to this one.
+    DatabaseTls.settings(c).foreach { ssl =>
+      hc.addDataSourceProperty("ssl", "true")
+      hc.addDataSourceProperty("sslmode", ssl.mode)
+      hc.addDataSourceProperty("sslfactory", classOf[DatabaseSslSocketFactory].getName)
+      ssl.rootCert.foreach(hc.addDataSourceProperty("sslrootcert", _))
+      ssl.clientCertificate.foreach { (cert, key) =>
+        hc.addDataSourceProperty("sslcert", cert)
+        hc.addDataSourceProperty("sslkey", key)
+      }
+    }
     PostgresBlobStore(HikariDataSource(hc))
 
 /**

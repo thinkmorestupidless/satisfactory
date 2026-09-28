@@ -370,10 +370,9 @@ satisfactory/
   "service": {                                         "service": {
     "image": "…/satisfactory-api:0.1.0",                 "image": "…/satisfactory-solver:0.1.0",
     "env": [{ "name": "SAT_RUNNER_TOKEN",                "http": false,
-              "secretKeyRef": {…} }],                    "env": [{ "name": "SAT_API_URL", "value": "http://api" },
-    "resources": { "instanceType": "small",                       { "name": "SAT_RUNNER_TOKEN", "secretKeyRef": {…} }],
-      "autoscaling": { "minInstances": 3 } } } }         "resources": { "instanceType": "large",
-                                                           "autoscaling": { "minInstances": 3 } } } }
+              "secretKeyRef": {…} }],                    "env": [{ "name": "SAT_RUNNER_TOKEN", "secretKeyRef": {…} }],
+    "resources": { "instanceType": "small",                "resources": { "instanceType": "large",
+      "autoscaling": { "minInstances": 3 } } } }             "autoscaling": { "minInstances": 3 } } } }
 ```
 
 ```bash
