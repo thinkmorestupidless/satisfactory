@@ -28,15 +28,17 @@ Base: `https://api-satisfactory.<base domain>/api/platform/v1`. Authenticated by
 | Method | Path | Who | Body / Response |
 |---|---|---|---|
 | GET/PUT | `/tenants/{tenantId}/limits` | member / admin | `Limits { concurrency, submitPerMinute, lifetimeCeiling, retention }`; admins may lower, operators may raise above installation defaults |
-| POST | `/tenants/{tenantId}/queue/pause`, `…/resume` | operator | `204` |
+| POST | `/ops/tenants/{tenantId}/queue/pause`, `…/resume` | operator | `204` (see Operator routes) |
 
-## Configuration profiles (per model)
+## Configuration profiles
+
+ankka routes take at most two path parameters, so the model is in the body (`"model": "employee-scheduling/v1"`) or `?model=` rather than the path.
 
 | Method | Path | Who | Body / Response |
 |---|---|---|---|
-| GET | `/tenants/{tenantId}/models/{model}/configurations` | member | `[ConfigurationProfile]` including the synthesised read-only `standard` |
-| POST | `/tenants/{tenantId}/models/{model}/configurations` | admin | `ConfigurationProfile { name ≤ 60, description ≤ 1000, defaultConfigProfileId, runConfiguration, modelConfiguration, resourcesConfiguration }` → `201`; the 51st → `409` |
-| GET/PUT/DELETE | `…/configurations/{configurationId}` | member / admin / admin | `standard` → `405` on PUT/DELETE |
+| GET | `/tenants/{tenantId}/configurations?model=` | member | `[ConfigurationProfile]` including the synthesised read-only `standard` per model |
+| POST | `/tenants/{tenantId}/configurations` | admin | `ConfigurationProfile { model, name ≤ 60, description ≤ 1000, defaultConfigProfileId, runConfiguration, modelConfiguration (weights), resourcesConfiguration }` → `201`; the 51st for a model → `409` |
+| GET/PUT/DELETE | `/tenants/{tenantId}/configurations/{configurationId}` | member / admin / admin | `standard` → `405` on PUT/DELETE |
 
 ## Webhook subscriptions and delivery log
 
@@ -56,6 +58,7 @@ Base: `https://api-satisfactory.<base domain>/api/platform/v1`. Authenticated by
 | GET | `/ops/datasets` | `Page[OpsDatasetRow { datasetId, tenantId, model, status, priority, submittedAt, bestScore, workerId, epoch, attempt }]`; query `tenantId`, `model`, `status`, `page`, `size`. **No input or solution content** |
 | GET | `/ops/workers` | `[WorkerRow { workerId, models, slots, busy: [datasetId], draining, lastSeenAt, stale }]` |
 | POST | `/ops/datasets/{datasetId}/terminate` | `200 Metadata`; always `force` |
-| POST | `/ops/workers/{workerId}/drain`, `…/undrain` | `204` |
+| POST | `/ops/workers/{workerId}/drain`, `…/undrain` | `200 WorkerRow` |
+| POST | `/ops/tenants/{tenantId}/queue/pause`, `…/resume` | `204` |
 | GET | `/ops/audit` | `[ { subject, action, target, at } ]` last 500 |
-| GET | `/metrics` (served by `MetricsExtension`, research R15) | Prometheus text: `satisfactory_queued{model}`, `satisfactory_slots{state=free\|busy}`, `satisfactory_workers{state=ready\|draining\|stale}`, `satisfactory_lease_losses_total`, `satisfactory_requeues_total`, `satisfactory_solves_total{outcome}`, `satisfactory_webhook_failures_total` |
+| GET | `/metrics` (an endpoint on the HTTP port, `Authorization: Bearer <satisfactory.metrics-token>`; research R15) | Prometheus text: `satisfactory_queued{model}`, `satisfactory_slots{state=free\|busy}`, `satisfactory_workers{state=ready\|draining\|stale}`, `satisfactory_lease_losses_total`, `satisfactory_requeues_total`, `satisfactory_solves_total{outcome}`, `satisfactory_webhook_failures_total` |

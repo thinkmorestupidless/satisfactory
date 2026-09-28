@@ -1,0 +1,16 @@
+{
+  "name": "api",
+  "service": {
+    "image": "${IMAGE}",
+    "runtime": "${ANKKA_VERSION}",
+    "http": true,
+    "env": [
+      { "name": "SAT_RUNNER_TOKEN", "secretKeyRef": { "name": "satisfactory-secrets", "key": "runner-token" } },
+      { "name": "SAT_SECRET_KEY", "secretKeyRef": { "name": "satisfactory-secrets", "key": "secret-key" } },
+      { "name": "SAT_AUTH_ISSUER", "secretKeyRef": { "name": "satisfactory-secrets", "key": "auth-issuer" } },
+      { "name": "SAT_AUTH_JWKS_URL", "secretKeyRef": { "name": "satisfactory-secrets", "key": "auth-jwks-url" } },
+      { "name": "SAT_LOCAL_RUNNER", "value": "false" }
+    ],
+    "resources": { "instanceType": "small", "autoscaling": { "minInstances": 3 } }
+  }
+}

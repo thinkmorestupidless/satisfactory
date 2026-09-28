@@ -13,8 +13,8 @@ Served by `RunnerEndpoint` in `api`; spoken by `ControlChannel.Http` in `solver`
 | POST | `/internal/datasets/{id}/complete` | `CompleteRequest { epoch, reason: termination\|terminated, analysisRef? }` | `204` |
 | POST | `/internal/datasets/{id}/fail` | `FailRequest { epoch, message }` | `204` |
 | POST | `/internal/datasets/{id}/release` | `ReleaseRequest { epoch, reason: drained\|shutdown }` | `204`; the dataset is re-queued with `warmStartRef = best` |
-| PUT | `/internal/blobs/{ref}` | raw bytes, `Content-Type` | `204`; `ref` must start with the dataset id the worker holds |
-| GET | `/internal/blobs/{ref}` | | raw bytes |
+| PUT | `/internal/blobs/{datasetId}/{rest}` | raw bytes, `Content-Type` | `204`. A ref `<dataset>/<kind>/<part>` travels as two segments, the second URL-encoded (`solution%2Fe1-3`) |
+| GET | `/internal/blobs/{datasetId}/{rest}` | | raw bytes |
 
 ## Worker obligations
 

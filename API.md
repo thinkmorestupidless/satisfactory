@@ -10,6 +10,22 @@ Written 2026-09-22 from the public docs and the two OpenAPI specs saved under
 532 schemas) and the Platform API (`1.12.3`). Field names below are theirs unless a divergence says
 otherwise. Supersedes `DESIGN.md` §3.1, §3.2 and §4.
 
+> **2026-09-28 — as built** (specs/001-constraint-solving-service). Where the implementation settled
+> something this document left open or had to change it:
+>
+> - **Score analysis is Enterprise-only in Timefold Solver 2.7.** `score-analysis` answers the
+>   Community shape: `{ score, constraints: [{ name, weight, score }] }`, each constraint's
+>   contribution computed by ablation; no `matchCount` or `matches`, and `includeJustifications=true`
+>   is answered with `"justifications": "unsupported"` (§2.3).
+> - **Webhook signing** covers `<timestamp>.<payload>`, so a replayed request cannot carry a fresh
+>   timestamp (§2.4, §2.7). A subscription hears only events that happen after it was made.
+> - **SSE frames** are ankka's: `data:` lines whose payload is a JSON-quoted string holding
+>   `{ seq, metadata, skipped? }` or `{ heartbeat: true }` (§2.4, §8). `satisfactory-client` unwraps it.
+> - **Configuration profiles** are `/api/platform/v1/tenants/{t}/configurations[/{id}]` with the model
+>   in the body or `?model=`; operator actions are under `/api/platform/v1/ops` (§3).
+> - **Errors** from the API are `ErrorInfo`; refusals ankka makes itself (an ACL's 401/403, an unknown
+>   route) are ankka's `{ status, error }`.
+
 ---
 
 ## 1. Vocabulary
@@ -207,6 +223,11 @@ both: the issue types and their schemas.
 
 That is `SolutionManager.analyze` on the wire, justifications included when asked. The stateless
 `POST /score-analysis` scores a plan the caller already has, against a profile, creating nothing.
+
+**As built (2026-09-28):** `SolutionManager.analyze` is Enterprise-only in Timefold 2.7, so the
+Community build answers `{ score, constraints: [{ name, weight, score }] }` — each constraint's
+contribution by ablation (score with its weight at zero; the difference), which sums exactly to the
+total — and no matches or justifications (research R2).
 
 ### 2.4 Receiving results
 

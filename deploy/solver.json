@@ -1,0 +1,12 @@
+{
+  "name": "solver",
+  "service": {
+    "image": "${IMAGE}",
+    "runtime": "${ANKKA_VERSION}",
+    "http": false,
+    "env": [
+      { "name": "SAT_RUNNER_TOKEN", "secretKeyRef": { "name": "satisfactory-secrets", "key": "runner-token" } }
+    ],
+    "resources": { "instanceType": "large", "autoscaling": { "minInstances": 3 } }
+  }
+}

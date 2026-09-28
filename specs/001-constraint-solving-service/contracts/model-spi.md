@@ -1,5 +1,13 @@
 # Contract: Model SPI (`model-spi`, Java 21)
 
+> **As built (2026-09-28)** — `SolverModel<S, Score_ extends Score<Score_>>` in
+> `modules/model-spi/src/main/java/satisfactory/spi/SolverModel.java`. Differences from the sketch below:
+> weights are applied through `setWeights(S, ConstraintWeightOverrides<Score_>)` (a field on the
+> solution), and `ModelRuntime` does the rest once per model — `problem`/`solution` (decode and apply
+> weights), `score` (`SolutionManager.update`), `analyze` (ablation), `solve`/`terminateEarly` on a
+> worker. There is no `decodeChange`: supersede always tears down and warm-starts (V7 passed for both
+> models). Dataset JSON is Jackson 2 (`com.fasterxml.jackson.databind.JsonNode`).
+
 The only thing a model sees. Depends on `timefold-solver-core` 2.7.0 and Jackson; no ankka, no HTTP, no Scala. Registration is explicit: `ModelCatalog.of(EmployeeScheduling.V1, VehicleRouting.V1)` in both `api` and `solver`.
 
 ```java

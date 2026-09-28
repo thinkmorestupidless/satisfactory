@@ -310,6 +310,13 @@ SIGTERM (rolling deploy)
 
 ### The model SPI — in Java
 
+> **As built (2026-09-28):** `SolverModel<S, Score_>` in `modules/model-spi` (contracts/model-spi.md),
+> with `ModelRuntime` holding the solver factory, solution manager and (on a worker) solver manager
+> built from it once; score analysis is `ModelRuntime.analyze`, by ablation, because
+> `SolutionManager.analyze` is Enterprise-only in Timefold 2.7. Weights reach Timefold through a
+> `ConstraintWeightOverrides` field on each solution. Dataset JSON is Jackson 2. On ankka's largest
+> instance type (`large`, 2 vCPU) slots = cores − 1 = 1 per worker.
+
 ```java
 public interface SolverModel<S> {
   ModelId id();  String version();
@@ -363,10 +370,9 @@ satisfactory/
   "service": {                                         "service": {
     "image": "…/satisfactory-api:0.1.0",                 "image": "…/satisfactory-solver:0.1.0",
     "env": [{ "name": "SAT_RUNNER_TOKEN",                "http": false,
-              "secretKeyRef": {…} }],                    "env": [{ "name": "SAT_API_URL", "value": "http://api" },
-    "resources": { "instanceType": "small",                       { "name": "SAT_RUNNER_TOKEN", "secretKeyRef": {…} }],
-      "autoscaling": { "minInstances": 3 } } } }         "resources": { "instanceType": "large",
-                                                           "autoscaling": { "minInstances": 3 } } } }
+              "secretKeyRef": {…} }],                    "env": [{ "name": "SAT_RUNNER_TOKEN", "secretKeyRef": {…} }],
+    "resources": { "instanceType": "small",                "resources": { "instanceType": "large",
+      "autoscaling": { "minInstances": 3 } } } }             "autoscaling": { "minInstances": 3 } } } }
 ```
 
 ```bash
@@ -397,6 +403,7 @@ In the order it will hurt:
    design. The right signal is queue depth ÷ free slots, which `JobsView` already knows. Until
    ankka acts on autoscaling at all, the pool is a fixed size and the queue absorbs the rest.
 3. **SSE `id:` frames**, so `Last-Event-ID` resumption works with a plain `EventSource`.
+   Now tracked with the rest in [`docs/ankka-requests.md`](docs/ankka-requests.md).
 4. **To verify before building:** the HTTP request-body limit (pekko-http's default is 8 MB;
    Timefold accepts 100 MB gzip / 2 GB raw, and `Content-Encoding: gzip` must be honoured), the
    gateway's idle timeout against a quiet SSE stream (hence heartbeats),

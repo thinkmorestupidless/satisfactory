@@ -169,3 +169,45 @@ The `runner` module has no Pekko and no HTTP types: `ControlChannel` is a trait 
 | V7 | `ProblemChange` in-place patching keeps assignments across a warm start for the vehicle-routing list variable (R3) | whether supersede uses the optimisation or the teardown path for VRP |
 | V8 | `SolverManager` with `parallelSolverCount` = slots on a `large` instance with `-XX:MaxRAMPercentage=70` solves both demo datasets without GC pressure (R4) | JVM flags |
 | V9 | Whether `HardSoftBigDecimalScore` weight overrides accept integer weights without precision surprises (R3) | weight mapping |
+
+## Findings at implementation (2026-09-28)
+
+Recorded as they were found; each changes a detail above, not a decision.
+
+- **ankka 0.7.1, not 0.5.0.** Maven Central had moved on; `modules/` is identical between the two
+  tags (the difference is a TypeScript SDK, a native CLI and CI), so R4–R16 stand.
+- **Timefold 2.7 is on Jackson 3** (`tools.jackson`) and `timefold-solver-test` has no 2.x release
+  (`ConstraintVerifier` is in core). Timefold core itself has no Jackson dependency, so dataset JSON is
+  Jackson 2 (aligned with ankka's databind 2.21) and `json-schema-validator` 1.5.9; Timefold's own
+  Jackson module is not used.
+- **The quickstart has 8 constraints**, not the 62 of Timefold's commercial model; the catalog lists
+  those 8 with camelCase keys (`<key>Weight` on the wire).
+- **Weights work as designed** (R3/V9): `ConstraintWeightOverrides` on the solution, found by type;
+  `missingRequiredSkillWeight: 5` gives `-5hard`, `0` disables. Ablation contributions sum to the total
+  score exactly (`EmployeeSchedulingSuite`).
+- **V4 resolved**: ankka reads bodies with `toStrict`, which pekko-http caps with
+  `pekko.http.parsing.max-to-strict-bytes` (8m default), separately from
+  `pekko.http.server.parsing.max-content-length`. Both are set to 128m in `api`'s `application.conf`.
+- **ankka's HTTP layer allows two path parameters per route**, so there is one model endpoint per catalog
+  model, prefixed `/api/models/<key>/<version>`, with the entity name as a literal segment.
+- **Errors**: ankka renders its own refusals (ACL 401/403, unknown routes) as `{status, error}`; every
+  handler answers `ErrorInfo` itself through `Replies.handle`. Its 401 challenge is
+  `WWW-Authenticate: Bearer …` even for API keys.
+- **Model tests are munit suites in Scala** (in the Java modules' `src/test/scala`) rather than JUnit 5,
+  so every module tests with one runner and no extra sbt plugin.
+- **Performance seen**: the SMALL demo reaches `0hard` within 1.5 s at about 150,000 score calculations a
+  second on a laptop core (spike).
+
+### The V-list, closed
+
+| # | Outcome |
+|---|---|
+| V1 | **Passed.** An ankka service with no components reaches ready; `SolverServiceSuite` solves through the real `solver` service |
+| V2 | **Passed, and better than planned.** `SchemaType` is open: the solve tool's parameter schema is the model's input schema, `$ref`s inlined, and arguments are validated against it before anything is sent |
+| V3 | **Settled differently.** `RuntimeExtension.routes` are listed, not served; `/metrics` is an endpoint on the HTTP port behind `satisfactory.metrics-token` |
+| V4 | **Passed with a second setting.** `max-content-length` and `pekko.http.parsing.max-to-strict-bytes` are both needed; both are 128m |
+| V5 | **Not verified**: needs tier 5 on a cluster (Envoy's idle timeout against the 15 s keep-alive; gzip passing through the gateway) |
+| V6 | **Not verified**: needs an hour-long solve on a `large` instance in a cluster |
+| V7 | **Passed** for both models by the teardown path: a superseding or patched child warm-starts from the parent's routes/assignments (`LineageHttpSuite`); no in-place `ProblemChange` |
+| V8 | **Partly**: both demo datasets solve in-JVM under the test heap (2 GiB); the container flags are unexercised under load |
+| V9 | **Passed.** Integer weights on `HardSoftBigDecimalScore` and `HardMediumSoftScore` scale exactly (`EmployeeSchedulingSuite`, `VehicleRoutingSuite`) |

@@ -2,7 +2,12 @@
 
 Both published from this repository under `com.thinkmorestupidless`, Scala 3, versioned with the API.
 
-## `satisfactory-client` (no ankka dependency; `protocol` + JDK `HttpClient` + Pekko Streams for SSE is **not** used — streaming is a `java.util.concurrent.Flow.Publisher[StreamFrame]` so the client stays dependency-light)
+## `satisfactory-client` (no ankka dependency; `protocol` + the JDK `HttpClient`)
+
+> **As built:** bodies are `RawJson` (no Jackson in the client); `events` is a blocking,
+> reconnecting `Iterator[StreamFrame]` (`Streams.Frames`, `AutoCloseable`) that simply ends on a
+> final dataset, and `eventsPublisher` wraps it as a `Flow.Publisher`. `forModel` takes the tags to
+> put on submissions explicitly (`SatisfactoryTools.workflowTag(id)`), built per agent call.
 
 ```scala
 final class SatisfactoryClient(baseUrl: String, apiKey: String, http: HttpClient = HttpClient.newHttpClient()):

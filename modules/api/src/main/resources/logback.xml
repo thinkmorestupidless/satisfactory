@@ -1,0 +1,11 @@
+<configuration>
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder><pattern>%d{HH:mm:ss.SSS} %-5level %logger{24} - %msg%n</pattern></encoder>
+  </appender>
+  <logger name="org.apache.pekko" level="WARN" />
+  <logger name="com.thinkmorestupidless.ankka" level="INFO" />
+  <logger name="com.zaxxer.hikari" level="WARN" />
+  <logger name="io.r2dbc" level="WARN" />
+  <logger name="ai.timefold" level="WARN" />
+  <root level="INFO"><appender-ref ref="STDOUT" /></root>
+</configuration>
