@@ -1,0 +1,198 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" font-family="system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" aria-labelledby="title desc">
+  <title id="title">satisfactory on an ankka cluster</title>
+  <desc id="desc">satisfactory is two ankka services in one project namespace. Applications, ankka applications and tenant administrators reach the api service over HTTPS through the installation's gateway; administrators sign in with Keycloak, and api verifies their tokens. api runs three small instances as one Pekko cluster and holds the state: the model, platform, ops and runner endpoints, an entity per dataset and per tenant, views, lease timers and webhook consumers, all in its own Postgres database, blob store included. solver runs three large instances, serves no HTTP, and pulls work from api over mutual TLS: claim, report, complete. The ankka control plane and operator create and own both services. api delivers signed webhooks to the tenant's endpoint.</desc>
+  <style>
+    .bg { fill: #ffffff; }
+    .ink { fill: #1f2328; }
+    .muted { fill: #59636e; }
+    .box { fill: #f6f8fa; stroke: #afb8c1; stroke-width: 1.2; }
+    .hot { fill: #fff4ec; stroke: #c2410c; stroke-width: 1.5; }
+    .cluster { fill: none; stroke: #59636e; stroke-width: 1.5; }
+    .ns { fill: none; stroke: #8c959f; stroke-width: 1.2; stroke-dasharray: 5 4; }
+    .deploy { fill: none; stroke: #afb8c1; stroke-width: 1.2; stroke-dasharray: 3 3; }
+    .line { stroke: #1f2328; stroke-width: 1.4; fill: none; }
+    .dash { stroke: #59636e; stroke-width: 1.3; fill: none; stroke-dasharray: 4 3; }
+    .head { fill: #1f2328; }
+    .headmuted { fill: #59636e; }
+    text { font-size: 13px; }
+    .title { font-size: 14px; font-weight: 600; }
+    .small { font-size: 11.5px; }
+    .mono { font-size: 11.5px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .label { font-size: 11.5px; font-weight: 600; letter-spacing: 0.02em; }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #0d1117; }
+      .ink { fill: #e6edf3; }
+      .muted { fill: #9198a1; }
+      .box { fill: #161b22; stroke: #3d444d; }
+      .hot { fill: #2a1a10; stroke: #ff8a4c; }
+      .cluster { stroke: #9198a1; }
+      .ns { stroke: #656c76; }
+      .deploy { stroke: #3d444d; }
+      .line { stroke: #e6edf3; }
+      .dash { stroke: #9198a1; }
+      .head { fill: #e6edf3; }
+      .headmuted { fill: #9198a1; }
+    }
+  </style>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" class="head"/>
+    </marker>
+    <marker id="m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" class="headmuted"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1200" height="800" rx="12"/>
+
+  <!-- Outside the cluster -->
+  <text class="label muted" x="24" y="72">OUTSIDE THE CLUSTER</text>
+
+  <rect class="box" x="24" y="140" width="170" height="70" rx="8"/>
+  <text class="title ink" x="109" y="168" text-anchor="middle">Applications</text>
+  <text class="small muted" x="109" y="188" text-anchor="middle">satisfactory-client · SSE</text>
+
+  <rect class="box" x="24" y="240" width="170" height="70" rx="8"/>
+  <text class="title ink" x="109" y="268" text-anchor="middle">ankka applications</text>
+  <text class="small muted" x="109" y="288" text-anchor="middle">ankka-satisfactory tools</text>
+
+  <rect class="box" x="24" y="340" width="170" height="70" rx="8"/>
+  <text class="title ink" x="109" y="368" text-anchor="middle">Tenant admins</text>
+  <text class="small muted" x="109" y="388" text-anchor="middle">and operators · signed in</text>
+
+  <rect class="box" x="24" y="600" width="170" height="70" rx="8"/>
+  <text class="title ink" x="109" y="628" text-anchor="middle">Webhook receivers</text>
+  <text class="small muted" x="109" y="648" text-anchor="middle">the tenant's endpoint</text>
+
+  <!-- The cluster -->
+  <rect class="cluster" x="240" y="40" width="940" height="744" rx="14"/>
+  <text class="label muted" x="258" y="64">KUBERNETES CLUSTER</text>
+
+  <!-- Gateway -->
+  <rect class="ns" x="258" y="84" width="176" height="456" rx="10"/>
+  <text class="small muted" x="346" y="104" text-anchor="middle">ankka-gateway</text>
+  <rect class="box" x="272" y="114" width="148" height="412" rx="8"/>
+  <text class="title ink" x="346" y="206" text-anchor="middle">Gateway</text>
+  <text class="small muted" x="346" y="224" text-anchor="middle">Envoy Gateway</text>
+  <text class="small muted" x="346" y="240" text-anchor="middle">TLS for *.&lt;base&gt;</text>
+  <text class="small ink" x="412" y="146" text-anchor="end">auth.&lt;base&gt;</text>
+  <text class="small ink" x="412" y="321" text-anchor="end">api-satisfactory.</text>
+  <text class="small ink" x="412" y="336" text-anchor="end">&lt;base&gt;</text>
+
+  <!-- Outside -> gateway -->
+  <line class="line" x1="194" y1="175" x2="270" y2="175" marker-end="url(#a)"/>
+  <text class="small muted" x="235" y="168" text-anchor="end">HTTPS</text>
+  <line class="line" x1="194" y1="275" x2="270" y2="275" marker-end="url(#a)"/>
+  <text class="small muted" x="235" y="268" text-anchor="end">HTTPS</text>
+  <line class="line" x1="194" y1="375" x2="270" y2="375" marker-end="url(#a)"/>
+  <text class="small muted" x="235" y="368" text-anchor="end">HTTPS</text>
+
+  <!-- Keycloak -->
+  <rect class="ns" x="454" y="84" width="306" height="100" rx="10"/>
+  <text class="small muted" x="466" y="102">ankka-auth</text>
+  <rect class="box" x="470" y="110" width="274" height="62" rx="8"/>
+  <text class="title ink" x="607" y="136" text-anchor="middle">Keycloak</text>
+  <text class="small muted" x="607" y="155" text-anchor="middle">signs platform tokens · the operator role</text>
+  <line class="line" x1="420" y1="141" x2="468" y2="141" marker-end="url(#a)"/>
+
+  <!-- The ankka platform -->
+  <rect class="ns" x="780" y="84" width="380" height="100" rx="10"/>
+  <text class="small muted" x="792" y="102">ankka-controlplane · ankka-operator</text>
+  <rect class="box" x="794" y="110" width="352" height="62" rx="8"/>
+  <text class="title ink" x="970" y="136" text-anchor="middle">ankka control plane and operator</text>
+  <text class="small muted" x="970" y="155" text-anchor="middle">apply deploy/api.json and deploy/solver.json</text>
+
+  <!-- The project namespace -->
+  <rect class="ns" x="454" y="214" width="706" height="556" rx="10"/>
+  <text class="small muted" x="466" y="232">ankka-satisfactory — the project</text>
+
+  <!-- platform -> namespace -->
+  <line class="line" x1="1040" y1="174" x2="1040" y2="212" marker-end="url(#a)"/>
+  <text class="small ink" x="1048" y="198">creates and owns</text>
+
+  <!-- api verifies tokens against keycloak -->
+  <line class="dash" x1="720" y1="238" x2="720" y2="174" marker-end="url(#m)"/>
+  <text class="small muted" x="712" y="203" text-anchor="end">verifies platform tokens</text>
+
+  <!-- api -->
+  <rect class="deploy" x="470" y="240" width="340" height="260" rx="8"/>
+  <text class="title ink" x="484" y="262">api</text>
+  <text class="small muted" x="512" y="262">Deployment of 3 · small · exposed</text>
+  <rect class="hot" x="486" y="276" width="308" height="160" rx="8"/>
+  <text class="mono ink" x="500" y="298">ModelsEndpoint</text>
+  <text class="small muted" x="630" y="298">model API, event stream</text>
+  <text class="mono ink" x="500" y="316">PlatformEndpoint</text>
+  <text class="small muted" x="630" y="316">tenants, keys, webhooks</text>
+  <text class="mono ink" x="500" y="334">OpsEndpoint</text>
+  <text class="small muted" x="630" y="334">datasets, workers, queues</text>
+  <text class="mono ink" x="500" y="352">RunnerEndpoint</text>
+  <text class="small muted" x="630" y="352">/internal, for workers</text>
+  <text class="mono ink" x="500" y="370">DatasetEntity</text>
+  <text class="small muted" x="630" y="370">one per dataset</text>
+  <text class="mono ink" x="500" y="388">TenantEntity</text>
+  <text class="small muted" x="630" y="388">limits, concurrency slots</text>
+  <line class="deploy" x1="500" y1="402" x2="780" y2="402"/>
+  <text class="small muted" x="640" y="422" text-anchor="middle">views · lease timers · webhook consumers</text>
+  <text class="small muted" x="640" y="464" text-anchor="middle">three instances, one Pekko cluster:</text>
+  <text class="small muted" x="640" y="480" text-anchor="middle">entities sharded by id</text>
+
+  <!-- gateway -> api -->
+  <line class="line" x1="420" y1="328" x2="468" y2="328" marker-end="url(#a)"/>
+  <text class="small muted" x="444" y="320" text-anchor="middle">route</text>
+
+  <!-- api -> webhook receivers -->
+  <path class="line" d="M 470 470 L 446 470 L 446 635 L 196 635" marker-end="url(#a)"/>
+  <text class="small muted" x="320" y="627" text-anchor="middle">signed webhooks · HTTPS</text>
+
+  <!-- solver -> api -->
+  <line class="line" x1="560" y1="568" x2="560" y2="502" marker-end="url(#a)"/>
+  <text class="small ink" x="572" y="528">pulls: claim · report · complete</text>
+  <text class="small muted" x="572" y="546">service client · mutual TLS · runner token</text>
+
+  <!-- solver -->
+  <rect class="deploy" x="470" y="570" width="340" height="166" rx="8"/>
+  <text class="title ink" x="484" y="592">solver</text>
+  <text class="small muted" x="532" y="592">Deployment of 3 · large · no HTTP</text>
+  <rect class="hot" x="490" y="608" width="96" height="68" rx="6"/>
+  <text class="small ink" x="538" y="632" text-anchor="middle">worker</text>
+  <text class="small muted" x="538" y="649" text-anchor="middle">Timefold</text>
+  <text class="small muted" x="538" y="664" text-anchor="middle">one slot</text>
+  <rect class="hot" x="592" y="608" width="96" height="68" rx="6"/>
+  <text class="small ink" x="640" y="632" text-anchor="middle">worker</text>
+  <text class="small muted" x="640" y="649" text-anchor="middle">Timefold</text>
+  <text class="small muted" x="640" y="664" text-anchor="middle">one slot</text>
+  <rect class="hot" x="694" y="608" width="96" height="68" rx="6"/>
+  <text class="small ink" x="742" y="632" text-anchor="middle">worker</text>
+  <text class="small muted" x="742" y="649" text-anchor="middle">Timefold</text>
+  <text class="small muted" x="742" y="664" text-anchor="middle">one slot</text>
+  <text class="small muted" x="640" y="700" text-anchor="middle">a claim loop per slot · no components</text>
+  <text class="small muted" x="640" y="716" text-anchor="middle">the pool's capacity is its instance count</text>
+
+  <!-- Postgres -->
+  <rect class="box" x="840" y="240" width="306" height="260" rx="8"/>
+  <text class="title ink" x="993" y="264" text-anchor="middle">Postgres ankka-db</text>
+  <text class="small muted" x="993" y="282" text-anchor="middle">CloudNativePG</text>
+  <rect class="bg" x="858" y="298" width="270" height="76" rx="5"/>
+  <rect class="deploy" x="858" y="298" width="270" height="76" rx="5"/>
+  <text class="small ink" x="993" y="320" text-anchor="middle">database: api</text>
+  <text class="small muted" x="993" y="338" text-anchor="middle">journal · views · timers</text>
+  <text class="small muted" x="993" y="356" text-anchor="middle">blob store: problem and solution bodies</text>
+  <rect class="bg" x="858" y="386" width="270" height="48" rx="5"/>
+  <rect class="deploy" x="858" y="386" width="270" height="48" rx="5"/>
+  <text class="small ink" x="993" y="406" text-anchor="middle">database: solver</text>
+  <text class="small muted" x="993" y="423" text-anchor="middle">provisioned, barely used</text>
+  <text class="small muted" x="993" y="462" text-anchor="middle">one database per service</text>
+  <text class="small muted" x="993" y="478" text-anchor="middle">mutual TLS · certificate login</text>
+
+  <!-- api -> its database -->
+  <line class="line" x1="810" y1="336" x2="856" y2="336" marker-end="url(#a)"/>
+
+  <!-- Secret -->
+  <rect class="box" x="840" y="570" width="306" height="100" rx="8"/>
+  <text class="title ink" x="993" y="594" text-anchor="middle">Secret satisfactory-secrets</text>
+  <text class="small muted" x="993" y="614" text-anchor="middle">runner-token · secret-key</text>
+  <text class="small muted" x="993" y="631" text-anchor="middle">auth-issuer · auth-jwks-url</text>
+  <text class="small muted" x="993" y="654" text-anchor="middle">read as environment by both services</text>
+
+  <text class="small muted" x="466" y="758">also per service, from ankka: in-cluster Service, certificates, network policy, and api's HTTPRoute</text>
+</svg>

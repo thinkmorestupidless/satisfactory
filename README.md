@@ -4,17 +4,7 @@ Constraint solving as a service, built on [Timefold Solver](https://github.com/T
 and deployed as [ankka](../ankka) services. Submit a planning problem, get back a solution — or
 follow the stream of improving ones.
 
-Built through feature `001-constraint-solving-service` (phases 1–4 of the build order); see its
-`tasks.md` for what is done and what is left.
-
-| Document | What it is |
-|---|---|
-| [satisfactory.ankka.cloud](https://satisfactory.ankka.cloud/) | The documentation: get started, concepts, guides and reference, built from [`docs/`](docs/) and published as a site, `llms.txt` and agent skills |
-| [`DESIGN.md`](DESIGN.md) | The system: why it is shaped the way it is, the job entity and its fold rules, the runner protocol and pool, how it is hosted on ankka, what it asks of ankka, the three artefacts (`satisfactory`, `satisfactory-client`, `ankka-satisfactory`), and the build order |
-| [`API.md`](API.md) | The public API: a reimplementation of the Timefold Platform model API, with every divergence listed and justified. Supersedes the API parts of `DESIGN.md` |
-| [`notes/timefold/`](notes/timefold/) | The two Timefold OpenAPI specs the API is derived from: the Employee Shift Scheduling model API (`v1`) and the Platform API (`1.12.3`) |
-
-Read `API.md` first if you want to know what it does; `DESIGN.md` if you want to know how.
+![satisfactory on an ankka cluster: applications, ankka applications and tenant administrators reach the api service over HTTPS through the installation's gateway, and administrators sign in with Keycloak. api runs three small instances as one Pekko cluster and holds the state: the model, platform, ops and runner endpoints, an entity per dataset and per tenant, views, lease timers and webhook consumers, in its own Postgres database with the blob store. solver runs three large instances, serves no HTTP, and pulls work from api over mutual TLS. The ankka control plane and operator create and own both services, and api delivers signed webhooks to the tenant's endpoint.](docs/assets/diagrams/architecture.svg)
 
 ## The shape, in five lines
 
