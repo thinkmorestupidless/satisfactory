@@ -16,6 +16,8 @@ Built through feature `001-constraint-solving-service` (phases 1–4 of the buil
 
 Read `API.md` first if you want to know what it does; `DESIGN.md` if you want to know how.
 
+![satisfactory on an ankka cluster: applications, ankka applications and tenant administrators reach the api service over HTTPS through the installation's gateway, and administrators sign in with Keycloak. api runs three small instances as one Pekko cluster and holds the state: the model, platform, ops and runner endpoints, an entity per dataset and per tenant, views, lease timers and webhook consumers, in its own Postgres database with the blob store. solver runs three large instances, serves no HTTP, and pulls work from api over mutual TLS. The ankka control plane and operator create and own both services, and api delivers signed webhooks to the tenant's endpoint.](docs/assets/diagrams/architecture.svg)
+
 ## The shape, in five lines
 
 - A **model** is compiled Java behind a small SPI (Timefold problems are code plus data); a

@@ -8,21 +8,7 @@ dataset, the tenants with their keys and limits, the views that list and queue, 
 leases, and the consumers that deliver webhooks. `solver` is not exposed at all: it is a pool of workers
 that pull datasets from `api` over HTTP, solve them with Timefold, and report back.
 
-```text
-client ──HTTPS──▶ api  (exposed, small, 3 instances)
-  submit / poll /        ├─ ModelsEndpoint      one per model: the model API and its event stream
-  events / terminate     ├─ PlatformEndpoint    tenants, members, keys, limits, profiles, webhooks
-                         ├─ OpsEndpoint         operators: datasets, workers, queues, audit
-                         ├─ RunnerEndpoint      /internal: what workers call, behind a shared token
-webhook ◀────────────────├─ DatasetEntity       the source of truth for one dataset
-                         ├─ TenantEntity        keys, limits, concurrency slots, profiles, subscriptions
-                         ├─ views, timers, consumers, and the blob store
-                         ▲
-                         │ HTTP, pull only: claim · phase · report · heartbeat · complete
-                         │
-                  solver (not exposed, large, N instances)
-                         └─ one worker: a claim loop per slot, Timefold per model
-```
+![satisfactory on an ankka cluster: applications, ankka applications and tenant administrators reach the api service over HTTPS through the installation's gateway, and administrators sign in with Keycloak. api runs three small instances as one Pekko cluster and holds the state: the model, platform, ops and runner endpoints, an entity per dataset and per tenant, views, lease timers and webhook consumers, in its own Postgres database with the blob store. solver runs three large instances, serves no HTTP, and pulls work from api over mutual TLS. The ankka control plane and operator create and own both services, and api delivers signed webhooks to the tenant's endpoint.](../assets/diagrams/architecture.svg)
 
 ## Why two services
 
